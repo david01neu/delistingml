@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Prediction of Delisting using a Machine Learning Ensemble</title>
+  <meta name="description" content="<p>R markdown file for the project “Prediction of Delisting using a Machine
+Learning Ensemble”</p>" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Prediction of Delisting using a Machine Learning Ensemble" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="<p>R markdown file for the project “Prediction of Delisting using a Machine
+Learning Ensemble”</p>" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Prediction of Delisting using a Machine Learning Ensemble" />
+  
+  <meta name="twitter:description" content="<p>R markdown file for the project “Prediction of Delisting using a Machine
+Learning Ensemble”</p>" />
+  
+
+<meta name="author" content="David Neuhäusler, Jungyeon Yoon, Richard A. Levine, Juanjuan Fan" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+<link rel="next" href="data.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/testrmd-0.0.1.9000/testrmd.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Predicition of Delisting</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>2</b> Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data.html"><a href="data.html#delisting-financial-and-macroeconomic-data"><i class="fa fa-check"></i><b>2.1</b> Delisting, financial and macroeconomic data</a></li>
+<li class="chapter" data-level="2.2" data-path="data.html"><a href="data.html#exploratory-data-analysis"><i class="fa fa-check"></i><b>2.2</b> Exploratory Data Analysis</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="data.html"><a href="data.html#overview-over-deslisting-dates"><i class="fa fa-check"></i><b>2.2.1</b> Overview over deslisting dates</a></li>
+<li class="chapter" data-level="2.2.2" data-path="data.html"><a href="data.html#correlation-analysis"><i class="fa fa-check"></i><b>2.2.2</b> Correlation analysis</a></li>
+<li class="chapter" data-level="2.2.3" data-path="data.html"><a href="data.html#summary-statistics-for-features"><i class="fa fa-check"></i><b>2.2.3</b> Summary statistics for features</a></li>
+<li class="chapter" data-level="2.2.4" data-path="data.html"><a href="data.html#features-and-delisting-frequency"><i class="fa fa-check"></i><b>2.2.4</b> Features and delisting frequency</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="data.html"><a href="data.html#predictor-data-set"><i class="fa fa-check"></i><b>2.3</b> Predictor data set</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="data.html"><a href="data.html#identifiy-duplicates"><i class="fa fa-check"></i><b>2.3.1</b> Identifiy duplicates</a></li>
+<li class="chapter" data-level="2.3.2" data-path="data.html"><a href="data.html#missing-data"><i class="fa fa-check"></i><b>2.3.2</b> Missing data</a></li>
+<li class="chapter" data-level="2.3.3" data-path="data.html"><a href="data.html#predictior-data-set"><i class="fa fa-check"></i><b>2.3.3</b> Predictior data set</a></li>
+<li class="chapter" data-level="2.3.4" data-path="data.html"><a href="data.html#prepare-predictor-data-set"><i class="fa fa-check"></i><b>2.3.4</b> Prepare predictor data set</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="empirical-results.html"><a href="empirical-results.html"><i class="fa fa-check"></i><b>3</b> Empirical Results</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="empirical-results.html"><a href="empirical-results.html#random-forest"><i class="fa fa-check"></i><b>3.1</b> Random forest</a></li>
+<li class="chapter" data-level="3.2" data-path="empirical-results.html"><a href="empirical-results.html#logistic-regression"><i class="fa fa-check"></i><b>3.2</b> Logistic Regression</a></li>
+<li class="chapter" data-level="3.3" data-path="empirical-results.html"><a href="empirical-results.html#support-vector-machine"><i class="fa fa-check"></i><b>3.3</b> Support Vector Machine</a></li>
+<li class="chapter" data-level="3.4" data-path="empirical-results.html"><a href="empirical-results.html#neural-net"><i class="fa fa-check"></i><b>3.4</b> Neural net</a></li>
+<li class="chapter" data-level="3.5" data-path="empirical-results.html"><a href="empirical-results.html#boosting"><i class="fa fa-check"></i><b>3.5</b> Boosting</a></li>
+<li class="chapter" data-level="3.6" data-path="empirical-results.html"><a href="empirical-results.html#ensemble"><i class="fa fa-check"></i><b>3.6</b> Ensemble</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Prediction of Delisting using a Machine Learning Ensemble</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">Prediction of Delisting using a Machine Learning Ensemble</h1>
+<p class="author"><em>David Neuhäusler, Jungyeon Yoon, Richard A. Levine, Juanjuan Fan</em></p>
+<p class="date"><em>February 2024</em></p>
+</div>
+<div id="introduction" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">1</span> Introduction<a href="index.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" tabindex="-1"></a><span class="fu">library</span>(plyr) <span class="co"># tools for splitting, applying and combining data</span></span>
+<span id="cb1-2"><a href="index.html#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># collection of R packages designed for data science</span></span>
+<span id="cb1-3"><a href="index.html#cb1-3" tabindex="-1"></a><span class="fu">library</span>(patchwork) <span class="co"># simple layouts for ggplot2</span></span>
+<span id="cb1-4"><a href="index.html#cb1-4" tabindex="-1"></a><span class="fu">library</span>(ggpubr) <span class="co"># customize ggplot2 plots</span></span>
+<span id="cb1-5"><a href="index.html#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggtext) <span class="co"># simple Markdown and HTML rendering for ggplot2</span></span>
+<span id="cb1-6"><a href="index.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(glue) <span class="co"># R expression embedding for strings</span></span>
+<span id="cb1-7"><a href="index.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(formattable) <span class="co"># formatter functions</span></span>
+<span id="cb1-8"><a href="index.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="co"># use LaTeX in plots</span></span>
+<span id="cb1-9"><a href="index.html#cb1-9" tabindex="-1"></a><span class="fu">library</span>(pander) <span class="co"># rendering of R objects into markdown</span></span>
+<span id="cb1-10"><a href="index.html#cb1-10" tabindex="-1"></a><span class="fu">library</span>(lubridate) <span class="co"># dates and times</span></span>
+<span id="cb1-11"><a href="index.html#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="index.html#cb1-12" tabindex="-1"></a><span class="fu">library</span>(rsample) <span class="co"># functions for resampling</span></span>
+<span id="cb1-13"><a href="index.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(mice) <span class="co"># missing data imputation models</span></span>
+<span id="cb1-14"><a href="index.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(mltools) <span class="co"># machine learning helper functions</span></span>
+<span id="cb1-15"><a href="index.html#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="index.html#cb1-16" tabindex="-1"></a><span class="fu">library</span>(parallel) <span class="co"># parallel processing for randomForestSRC</span></span>
+<span id="cb1-17"><a href="index.html#cb1-17" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="index.html#cb1-18" tabindex="-1"></a><span class="fu">library</span>(randomForestSRC) <span class="co"># random forest implementation</span></span>
+<span id="cb1-19"><a href="index.html#cb1-19" tabindex="-1"></a><span class="fu">library</span>(glmnet) <span class="co"># generalized linear models with penalization terms</span></span>
+<span id="cb1-20"><a href="index.html#cb1-20" tabindex="-1"></a><span class="fu">library</span>(kernlab) <span class="co"># kernel-based machine learning methods</span></span>
+<span id="cb1-21"><a href="index.html#cb1-21" tabindex="-1"></a><span class="fu">library</span>(gbm) <span class="co"># generalized boosted regression models</span></span>
+<span id="cb1-22"><a href="index.html#cb1-22" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="index.html#cb1-23" tabindex="-1"></a><span class="fu">library</span>(devtools) <span class="co"># required for reticulate</span></span>
+<span id="cb1-24"><a href="index.html#cb1-24" tabindex="-1"></a><span class="fu">library</span>(reticulate) <span class="co"># embeds Python session within R session</span></span>
+<span id="cb1-25"><a href="index.html#cb1-25" tabindex="-1"></a><span class="fu">library</span>(tensorflow) <span class="co"># open-source machine learning platfrom</span></span>
+<span id="cb1-26"><a href="index.html#cb1-26" tabindex="-1"></a><span class="co"># install_tensorflow()</span></span>
+<span id="cb1-27"><a href="index.html#cb1-27" tabindex="-1"></a><span class="fu">library</span>(keras) <span class="co"># high-level API to build and train deep learning models</span></span>
+<span id="cb1-28"><a href="index.html#cb1-28" tabindex="-1"></a><span class="co"># install_keras()</span></span>
+<span id="cb1-29"><a href="index.html#cb1-29" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="index.html#cb1-30" tabindex="-1"></a><span class="fu">library</span>(caret) <span class="co"># misc functions for training and plotting ml models</span></span>
+<span id="cb1-31"><a href="index.html#cb1-31" tabindex="-1"></a><span class="fu">library</span>(caretEnsemble) <span class="co"># create ensemble of caret models</span></span>
+<span id="cb1-32"><a href="index.html#cb1-32" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="index.html#cb1-33" tabindex="-1"></a><span class="fu">library</span>(testthat) <span class="co"># testing framework for R</span></span>
+<span id="cb1-34"><a href="index.html#cb1-34" tabindex="-1"></a><span class="fu">library</span>(testrmd) <span class="co"># testing output for Rmd-files</span></span>
+<span id="cb1-35"><a href="index.html#cb1-35" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="index.html#cb1-36" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>() <span class="sc">%+replace%</span></span>
+<span id="cb1-37"><a href="index.html#cb1-37" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb1-38"><a href="index.html#cb1-38" tabindex="-1"></a>    <span class="co"># plot title</span></span>
+<span id="cb1-39"><a href="index.html#cb1-39" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb1-40"><a href="index.html#cb1-40" tabindex="-1"></a>      <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">1.3</span>), <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb1-41"><a href="index.html#cb1-41" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>), <span class="at">hjust =</span> <span class="dv">0</span></span>
+<span id="cb1-42"><a href="index.html#cb1-42" tabindex="-1"></a>    ),</span>
+<span id="cb1-43"><a href="index.html#cb1-43" tabindex="-1"></a>    <span class="co"># plot panel</span></span>
+<span id="cb1-44"><a href="index.html#cb1-44" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-45"><a href="index.html#cb1-45" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-46"><a href="index.html#cb1-46" tabindex="-1"></a>    <span class="co"># axes</span></span>
+<span id="cb1-47"><a href="index.html#cb1-47" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.85</span>), <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb1-48"><a href="index.html#cb1-48" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.70</span>), <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb1-49"><a href="index.html#cb1-49" tabindex="-1"></a>    <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb1-50"><a href="index.html#cb1-50" tabindex="-1"></a>    <span class="co"># legend</span></span>
+<span id="cb1-51"><a href="index.html#cb1-51" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.85</span>), <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb1-52"><a href="index.html#cb1-52" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.70</span>), <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb1-53"><a href="index.html#cb1-53" tabindex="-1"></a>    <span class="at">legend.key =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">colour =</span> <span class="cn">NA</span>),</span>
+<span id="cb1-54"><a href="index.html#cb1-54" tabindex="-1"></a>    <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">1.5</span>, <span class="st">&quot;lines&quot;</span>),</span>
+<span id="cb1-55"><a href="index.html#cb1-55" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">colour =</span> <span class="cn">NA</span>),</span>
+<span id="cb1-56"><a href="index.html#cb1-56" tabindex="-1"></a>    <span class="co"># plot facets</span></span>
+<span id="cb1-57"><a href="index.html#cb1-57" tabindex="-1"></a>    <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb1-58"><a href="index.html#cb1-58" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(</span>
+<span id="cb1-59"><a href="index.html#cb1-59" tabindex="-1"></a>      <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.85</span>), <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb1-60"><a href="index.html#cb1-60" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">0</span>)</span>
+<span id="cb1-61"><a href="index.html#cb1-61" tabindex="-1"></a>    )</span>
+<span id="cb1-62"><a href="index.html#cb1-62" tabindex="-1"></a>  ))</span>
+<span id="cb1-63"><a href="index.html#cb1-63" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-64"><a href="index.html#cb1-64" tabindex="-1"></a>  <span class="st">&quot;#000000&quot;</span>, <span class="st">&quot;#555555&quot;</span>, <span class="st">&quot;#999999&quot;</span>,</span>
+<span id="cb1-65"><a href="index.html#cb1-65" tabindex="-1"></a>  <span class="st">&quot;#0072B2&quot;</span>, <span class="st">&quot;#009E73&quot;</span>, <span class="st">&quot;#E69F00&quot;</span>, <span class="st">&quot;#D55E00&quot;</span>,</span>
+<span id="cb1-66"><a href="index.html#cb1-66" tabindex="-1"></a>  <span class="st">&quot;#F0E442&quot;</span>, <span class="st">&quot;#CC79A7&quot;</span>, <span class="st">&quot;#56B4E9&quot;</span></span>
+<span id="cb1-67"><a href="index.html#cb1-67" tabindex="-1"></a>)</span>
+<span id="cb1-68"><a href="index.html#cb1-68" tabindex="-1"></a><span class="fu">names</span>(colors) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-69"><a href="index.html#cb1-69" tabindex="-1"></a>  <span class="st">&quot;black&quot;</span>, <span class="st">&quot;gray&quot;</span>, <span class="st">&quot;lightgray&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>,</span>
+<span id="cb1-70"><a href="index.html#cb1-70" tabindex="-1"></a>  <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;magenta&quot;</span>, <span class="st">&quot;lightblue&quot;</span></span>
+<span id="cb1-71"><a href="index.html#cb1-71" tabindex="-1"></a>)</span>
+<span id="cb1-72"><a href="index.html#cb1-72" tabindex="-1"></a></span>
+<span id="cb1-73"><a href="index.html#cb1-73" tabindex="-1"></a>testrmd<span class="sc">::</span><span class="fu">init</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" tabindex="-1"></a><span class="co"># randomForestSRC: OpenMP uses all available cores</span></span>
+<span id="cb2-2"><a href="index.html#cb2-2" tabindex="-1"></a><span class="fu">options</span>(<span class="at">rf.cores =</span> <span class="fu">detectCores</span>(), <span class="at">mc.cores =</span> <span class="fu">detectCores</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="index.html#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="index.html#cb3-3" tabindex="-1"></a><span class="co"># data constants</span></span>
+<span id="cb3-4"><a href="index.html#cb3-4" tabindex="-1"></a>REBUILD_INITIAL_DATA_SET <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb3-5"><a href="index.html#cb3-5" tabindex="-1"></a>REBUILD_PREDICTOR_DATA_SET <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb3-6"><a href="index.html#cb3-6" tabindex="-1"></a>IS_QUARTERLY_DATA <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb3-7"><a href="index.html#cb3-7" tabindex="-1"></a>FIRST_TRADING_DATE_AVAILABLE <span class="ot">&lt;-</span> <span class="fu">ymd</span>(<span class="st">&quot;1970-01-01&quot;</span>)</span>
+<span id="cb3-8"><a href="index.html#cb3-8" tabindex="-1"></a>LAST_TRADING_DATE_AVAILABLE <span class="ot">&lt;-</span> <span class="fu">ymd</span>(<span class="st">&quot;2022-12-30&quot;</span>)</span>
+<span id="cb3-9"><a href="index.html#cb3-9" tabindex="-1"></a>NUMBER_YEARS_AVAILABLE <span class="ot">&lt;-</span> <span class="fu">interval</span>(FIRST_TRADING_DATE_AVAILABLE, LAST_TRADING_DATE_AVAILABLE) <span class="sc">/</span> <span class="fu">years</span>(<span class="dv">1</span>)</span>
+<span id="cb3-10"><a href="index.html#cb3-10" tabindex="-1"></a>MAX_DATE <span class="ot">&lt;-</span> <span class="fu">ymd</span>(<span class="st">&quot;2999-12-30&quot;</span>)</span>
+<span id="cb3-11"><a href="index.html#cb3-11" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="index.html#cb3-12" tabindex="-1"></a><span class="co"># constants for data preparation</span></span>
+<span id="cb3-13"><a href="index.html#cb3-13" tabindex="-1"></a>CORRELATION_THRESHOLD <span class="ot">&lt;-</span> <span class="fl">0.75</span></span>
+<span id="cb3-14"><a href="index.html#cb3-14" tabindex="-1"></a>N_QUARTERS_GAP_TO_DELISTING <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-15"><a href="index.html#cb3-15" tabindex="-1"></a>N_QUARTERS_FIN_RATIOS <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb3-16"><a href="index.html#cb3-16" tabindex="-1"></a>N_QUARTERS_FIN_RATIOS_REQUIRED <span class="ot">&lt;-</span> N_QUARTERS_FIN_RATIOS <span class="sc">+</span> N_QUARTERS_GAP_TO_DELISTING</span>
+<span id="cb3-17"><a href="index.html#cb3-17" tabindex="-1"></a>N_YEARS_FIN_RATIO_HISTORY <span class="ot">&lt;-</span> <span class="dv">7</span></span>
+<span id="cb3-18"><a href="index.html#cb3-18" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="index.html#cb3-19" tabindex="-1"></a><span class="co"># imputation constants</span></span>
+<span id="cb3-20"><a href="index.html#cb3-20" tabindex="-1"></a>REDO_MICE_IMPUTATION_PPM <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb3-21"><a href="index.html#cb3-21" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="index.html#cb3-22" tabindex="-1"></a><span class="co"># model constants</span></span>
+<span id="cb3-23"><a href="index.html#cb3-23" tabindex="-1"></a>REDO_MODEL_FITTING <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb3-24"><a href="index.html#cb3-24" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="index.html#cb3-25" tabindex="-1"></a><span class="co"># returns TRUE if years to delisting is betwwen 0.25 and 1.25</span></span>
+<span id="cb3-26"><a href="index.html#cb3-26" tabindex="-1"></a>determine_delisting_property <span class="ot">&lt;-</span> <span class="cf">function</span>(years_to_delisting) {</span>
+<span id="cb3-27"><a href="index.html#cb3-27" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fl">0.25</span> <span class="sc">&lt;=</span> years_to_delisting <span class="sc">&amp;</span> years_to_delisting <span class="sc">&lt;</span> <span class="fl">1.25</span>)</span>
+<span id="cb3-28"><a href="index.html#cb3-28" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+<a href="data.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/index.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

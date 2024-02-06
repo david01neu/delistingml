@@ -1,0 +1,449 @@
+# Empirical Results
+
+**Metrics**
+
+Contingency table
+
+observation | prediction delisted | prediction active
+--------- | ------------------- | -----------------
+delisted  | TP                  | FN
+active    | FP                  | TN
+
+
+$$
+\text{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}
+$$
+$$
+\text{Precision} = \frac{\text{# true positives}}{\text{# predicted positives}} = \frac{TP}{TP+FP}
+$$
+$$
+\text{Recall} = \text{Sensitivity} = \frac{\text{# true positives}}{\text{# actual positives}} = \frac{TP}{TP+FN}
+$$
+$$F_1\text{ score} = 2 \cdot \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}} \qquad \text{(harmonic mean of precision and recall)}
+$$
+$$
+\text{Specificity} = \frac{\text{# true negatives}}{\text{# actual negatives}} = \frac{TN}{TN+FP}
+$$
+$$
+\text{Matthew's Correlation Coefficient} = \text{MCC} = \frac{TN \cdot TP - FN \cdot FP}{\sqrt{(TP+FP)\cdot (TP+FN)\cdot (TN+FP)\cdot (TN+FN)}}
+$$
+
+**Helper functions**
+```{r, model.metrics.function}
+#' computes performance metrics true positives (tp), false negatives (fn),
+#' false positives (fp), true negatives (tn), accuracy, precision, recall,
+#' F1 score (f1), specificity and Matthew's correlation coefficient (mcc)
+#'
+#' @param actuals vector containing {0,1} values representing the actual response
+#' @param preds vector containing {0,1} values with predicted response
+#'
+#' @return list/tibble of computed metrics
+compute.metrics <- function(actuals, preds) {
+  if (is.factor(actuals)) {
+    actuals = actuals == "delisted"
+  }
+  if (is.factor(preds)) {
+    preds = preds == "delisted"
+  }
+  
+  tp <- sum(actuals == TRUE & preds == TRUE)
+  fn <- sum(actuals == TRUE & preds == FALSE)
+  fp <- sum(actuals == FALSE & preds == TRUE)
+  tn <- sum(actuals == FALSE & preds == FALSE)
+  precision <- tp / (tp + fp)
+  recall <- tp / (tp + fn)
+  
+  return (tibble(tp = tp, # TP
+    fn = fn, # FN
+    fp = fp, # FP
+    tn = tn, # TN
+    accuracy = (tp + tn) / (tp + fn + fp + tn), # accuracy
+    precision = precision, # precision
+    recall = recall, # recall / sensitivity
+    f1 = 2 * (precision * recall) / (precision + recall), # F1 score
+    specificity = tn / (tn + fp), # specificity
+    mcc = (tn * tp - fn * fp) / sqrt((tp+fp))/sqrt((tp+fn))/sqrt((tn+fp))/sqrt((tn+fn)) # mcc
+    )
+  )
+}
+
+#' computes performance metrics based on predicted probabilities for two classes.
+#' optimal threshold for classification determined by MCC-F1 and ROC 
+#' optimality criteria
+#'
+#' @param data data frame containing actual response (obs) and predicted 
+#'             probabilities for the positive class (delisted)
+#'
+#' @return vector with labelled performance metrics
+compute.summary <- function (data, lev = NULL, model = NULL) {
+  if (length(lev) > 2) {
+    stop(paste("Your outcome has", length(lev), "levels.",
+               "The compute.summary() function isn't appropriate."))
+  }
+  if (!all(levels(data[, "pred"]) == lev)) {
+    stop("Levels of observed and predicted data do not match.")
+  }
+
+  # MCC-F1 cutpoint
+  mccf1cutpoint <- compute.mccf1cutpoint(data$delisted, data$obs)
+  best_cutpoint.mccf1 <- mccf1cutpoint$best_cutpoint
+  metrics.mccf1 <- compute.metrics(data$obs, data$delisted >= best_cutpoint.mccf1)
+  colnames(metrics.mccf1) <- paste(colnames(metrics.mccf1), "mccf1", sep = ".")
+  metrics.mccf1 <- metrics.mccf1 %>% mutate(mccf1.mccf1 = mccf1cutpoint$mccf1metric)
+  
+  # ROC cutpoint
+  roc_auc <- compute.roc(data$delisted, data$obs)
+  best_cutpoint.roc <- roc_auc$best_cutpoint
+  metrics.roc <- compute.metrics(data$obs, data$delisted >= best_cutpoint.roc)
+  colnames(metrics.roc) <- paste(colnames(metrics.roc), "roc", sep = ".")
+  metrics.roc <- metrics.roc %>% mutate(auc.roc = roc_auc$auc)
+  
+  out <- unlist(cbind(metrics.roc, metrics.mccf1))
+  
+  return (out)
+}
+
+#' computes ROC curve for given predictions (binary classification)
+#'
+#' @param preds vector with predicted response
+#' @param actuals vector representing the actual response
+#'
+#' @return plot of ROC curve, best classification threshold/cutpoint,
+#'         area under the curve (AUC), resulting contingency table
+compute.roc <- function(preds, actuals) {
+  if (is.factor(actuals)) {
+    actuals = actuals == "delisted"
+  }
+  if (is.factor(preds)) {
+    preds = preds == "delisted"
+  }
+
+  auc_roc.result <- auc_roc(preds, actuals, returnDT = TRUE)
+
+  if (length(auc_roc.result) == 1) {
+    return (list(best_cutpoint = auc_roc.result, auc = 0.5))
+  } else {
+    # best classification threshold
+    best_cutpoint <- auc_roc.result %>% 
+      mutate(dist = sqrt((1 - CumulativeTPR)^2 + CumulativeFPR^2)) %>% # Pythagoras (distance to (0,1))
+      filter(dist <= min(dist))
+
+    plot.roc <- ggplot(auc_roc.result, aes(x = CumulativeFPR, y = CumulativeTPR)) +
+      geom_line(linewidth = 1) +
+      geom_point(data = best_cutpoint, aes(CumulativeFPR, CumulativeTPR), size = 3, colour = "blue") +
+      coord_fixed() +
+      labs(
+        title = "ROC curve",
+        subtitle = "Delisting predictor",
+        x = "False positive rate (1 - specificity)",
+        y = "True positive rate"
+      )
+    
+    table.prediction <- tibble(
+        actuals = actuals,
+        preds = preds >= best_cutpoint$Pred
+      )
+    
+    con.table <- table(table.prediction$actuals, table.prediction$preds)
+    
+    colnames(con.table) <- c("prediction active", "prediction delisted")
+    row.names(con.table) <- c("active", "delisted")
+    return (list(plot = plot.roc,
+                 best_cutpoint = best_cutpoint$Pred,
+                 best_cutpoint.text = paste("Classification threshold", 
+                                            formatC(best_cutpoint$Pred, digits = 4), 
+                                            "minimizes distance of ROC curve to (0,1)."),
+                 auc = tail(auc_roc.result$CumulativeArea, 1),
+                 con_table = con.table[2:1,2:1]))
+  }
+}
+
+#' computes MCCF1 curve for given predictions (binary classification)
+#'
+#' @param preds vector with predicted response
+#' @param actuals vector representing the actual response
+#'
+#' @return plot of MCCF1 curve, best classification threshold/cutpoint,
+#'         value of MCCF1 metric, resulting contingency table
+compute.mccf1cutpoint <- function(preds, actuals) {
+  if (is.factor(actuals)) {
+    actuals = actuals == "delisted"
+  }
+  if (is.factor(preds)) {
+    preds = preds == "delisted"
+  }
+  
+  mccf1.result <- mccf1(preds, actuals)
+  mccf1.summary <- summary.mccf1(mccf1.result) # best threshold and mccf1 metric
+
+  plot.mccf1 <- ggplot(mccf1.result, aes(x = f1, y = mcc.nor)) +
+    geom_path(linewidth = 1) +
+    geom_line(data = mccf1.result %>% filter(preds == mccf1.summary$best_threshold),
+                aes(f1, mcc.nor), size = 3, colour = "blue") +
+    xlim(0,1) +
+    ylim(0,1) + 
+    coord_fixed() +
+    labs(
+      title = "MCC vs. F1-score",
+      subtitle = "Delisting predictor",
+      x = "F1 score",
+      y = "unit-normalized MCC"
+    )
+
+  table.prediction <- tibble(
+      actuals = actuals,
+      preds = preds >= as.numeric(mccf1.summary$best_threshold)
+    )
+  
+  con.table <- table(table.prediction$actuals, table.prediction$preds)
+  colnames(con.table) <- c("prediction active", "prediction delisted")
+  row.names(con.table) <- c("active", "delisted")
+
+  return (list(plot = plot.mccf1,
+               best_cutpoint = mccf1.summary$best_threshold,
+               best_cutpoint.text = paste("Classification threshold", 
+                                          formatC(as.numeric(mccf1.summary$best_threshold), digits = 4), 
+                                          "maximizes MCCF1 metric."),
+               mccf1metric = mccf1.summary$mccf1_metric,
+               con_table = con.table))
+}
+
+#' computes MCCF1 curve for given predictions (binary classification)
+#'
+#' @param preds vector with predicted response
+#' @param actuals vector representing the actual response
+#' @param mccf1cutpoint true if computation uses MCCF1 curve, false if ROC curve
+#'
+#' @return best classification cutpoint | additionally plot of curve,
+#'         value of MCCF1/AUC metric, resulting contingency table
+compute.cutpoint <- function(preds, actuals, mccf1cutpoint = FALSE) {
+  if (mccf1cutpoint) {
+    return (compute.mccf1cutpoint(preds, actuals))
+  } else {
+    return (compute.roc(preds, actuals))
+  }
+}
+```
+
+Helper function to display variable importance
+```{r, model.vimp.function}
+#' visualize 20 most important features
+#'
+#' @param data data frame containing feature name and relative variable
+#'             importance (vimp) value for each feature of interest
+#' @param subtitle subtitle of plot
+#'
+#' @return barplot of the 20 most important features
+plot.vimp <- function(data, subtitle) {
+  data %>%
+    arrange(desc(vimp)) %>% 
+    filter(row_number() <= 20) %>%
+    ggplot(
+      aes(x = reorder(feature, -vimp), y = vimp)
+    ) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    geom_text(aes(label = formatC(vimp / max(vimp), digits = 2)),
+      hjust = 1,
+      colour = "white"
+    ) +
+    labs(
+      title = "Variable Importance (VIMP)",
+      subtitle = subtitle,
+      y = "relative feature importance",
+      x = "Features"
+    )
+}
+```
+
+Helper functions to illustrate performance metrics
+```{r, model.performance_metrics.function}
+#' prints hyperparameters, plots, cutpoints and metrics of ROC and MCC-F1 curve
+#'
+#' @param hyperparameters data frame containing hyperparameters of model of interest
+#' @param actuals vector representing the actual response
+#' @param pred.probability vector containing predicted probabilities of positive
+#'                         class
+illustrate.metrics <- function(hyperparameters, actuals, pred.probability) {
+  pander(hyperparameters, caption = "Hyperparameters of the selected model")
+  
+  # Determine best cutpoint based on AUC
+  cutpoint.roc <- compute.roc(pred.probability, actuals)
+  print(cutpoint.roc$plot)
+  print(cutpoint.roc$best_cutpoint.text)
+  pander(cutpoint.roc$con_table, caption = "Classification table with ROC cutpoint")
+  
+  # Determine best cutpoint which maximizes MCCF1-score
+  cutpoint.mccf1 <- compute.mccf1cutpoint(pred.probability, actuals)
+  print(cutpoint.mccf1$plot)
+  print(cutpoint.mccf1$best_cutpoint.text)
+  pander(cutpoint.mccf1$con_table, caption = "Classification table with MCCF1 cutpoint")
+  
+  # Display metrics for cutpoint rules ROC and MCCF1
+  metrics.table <- rbind(compute.metrics(actuals, pred.probability >= as.numeric(cutpoint.roc$best_cutpoint)))
+  metrics.table <- rbind(metrics.table, compute.metrics(actuals, pred.probability >= as.numeric(cutpoint.mccf1$best_cutpoint)))
+  metrics.table <- cbind(c("ROC", "MCCF1"), metrics.table)
+  pander(metrics.table)
+  
+  return (list(cutpoint.roc = cutpoint.roc$best_cutpoint, cutpoint.mccf1 = cutpoint.mccf1$best_cutpoint))
+}
+
+#' creates boxplots for performance metrics of models fitted with k-fold cross-
+#' validation
+#'
+#' @param resamples.mccf1 data frame with performance metrics for models on a
+#'                        k-fold subset using MCCF1 cutpoint for classification
+#' @param resamples.roc data frame with performance metrics for models on a
+#'                        k-fold subset using ROC cutpoint for classification
+#' @param model_identifier technical identifier of model name
+illustrate.metrics.boxplot <- function(resamples.mccf1, resamples.roc, model_identifier) {
+  rf.metrics.cv.mccf1 <- resamples.mccf1 %>% 
+    select(c(accuracy.mccf1, precision.mccf1, recall.mccf1, f1.mccf1, specificity.mccf1, mcc.mccf1)) %>% 
+    pivot_longer(
+      cols = everything(),
+      names_to = "metric",
+      values_to = "value"
+    ) %>% 
+    mutate(
+      model = model_identifier,
+      group = "mccf1",
+      metric = sub("\\.(.*)", "", metric)
+    )
+  
+  rf.metrics.cv.roc <- resamples.roc %>% 
+    select(c(accuracy.roc, precision.roc, recall.roc, f1.roc, specificity.roc, mcc.roc)) %>% 
+    pivot_longer(
+      cols = everything(),
+      names_to = "metric",
+      values_to = "value"
+    ) %>% 
+    mutate(
+      model = model_identifier,
+      group = "roc",
+      metric = sub("\\.(.*)", "", metric)
+    )
+  
+  plot <- ggplot(rbind(rf.metrics.cv.mccf1, rf.metrics.cv.roc), aes(x = metric, y = value, col = group)) + 
+    geom_boxplot() +
+    labs(
+      title = "Best model"
+    )
+  
+  return (plot)
+}
+```
+
+Helper function for MCCF1 curve computations
+```{r, model.mccf1.function}
+#' computes MCCF1 metric
+#'
+#' @param preds vector containing {0,1} binary predictions
+#' @param actuals vector representing the actual responses out of {0,1}
+#' 
+#' @return MCCF1 metric
+mccf1 <- function(preds, actuals){
+  result <- tibble(
+    preds = preds,
+    actuals = actuals
+  ) %>%
+  arrange(preds) %>%
+  mutate(
+    sumPositives = sum(actuals == 1),
+    sumNegatives = sum(actuals == 0),
+    cumulativeFN = cumsum(actuals == 1),
+    cumulativeTN = cumsum(actuals == 0),
+    cumulativeTP = sumPositives - cumulativeFN,
+    cumulativeFP = sumNegatives - cumulativeTN,
+    precision = ifelse(cumulativeTP + cumulativeFP > 0, cumulativeTP / (cumulativeTP + cumulativeFP), 0), # precision
+    recall = ifelse(cumulativeTP + cumulativeFN > 0, cumulativeTP / (cumulativeTP + cumulativeFN), 0), # recall / sensitivity
+    f1 = ifelse(precision + recall > 0, 2 * (precision * recall) / (precision + recall), 0), # F-score
+    mcc = (cumulativeTN * cumulativeTP - cumulativeFN * cumulativeFP) /
+      sqrt((cumulativeTP+cumulativeFP))/sqrt((cumulativeTP+cumulativeFN))/sqrt((cumulativeTN+cumulativeFP))/sqrt((cumulativeTN+cumulativeFN))
+  ) %>% 
+  mutate(mcc.nor = (mcc + 1) / 2)
+
+  return(result)
+}
+
+# based on https://github.com/hoffmangroup/mccf1/blob/master/mccf1.R
+summary.mccf1 <- function(object, digits, bins = 100, ...){
+  # get rid of NaN values in the vectors of mcc.nor and F1
+  mcc.nor_truncated <- object$mcc.nor[2: (length(object$mcc.nor) - 1)]
+  f_truncated <- object$f1[2: (length(object$f1) - 1)]
+
+  # get the index of the point with largest normalized MCC ("point" refers to the point on the MCC-F1 curve)
+  index_of_max_mcc <- which.max(mcc.nor_truncated)
+  # define points on the MCC-F1 curve located on the left of the point with the highest normalized MCC as "left curve"
+  # get the left curve by getting the subvectors of MCC and F1 up to the index of the largest normalized MCC
+  mcc_left <- mcc.nor_truncated[1: index_of_max_mcc]
+  f_left <- f_truncated[1: index_of_max_mcc]
+  # define points on the MCC-F1 curve located on the right of the point with the highest normalized MCC as "right curve"
+  # get the right curve by getting the subvectors of MCC and F1 after the index of the largest normalized MCC
+  mcc_right <- mcc.nor_truncated[(index_of_max_mcc + 1): length(mcc.nor_truncated)]
+  f_right <- f_truncated[(index_of_max_mcc + 1): length(f_truncated)]
+
+  # divide the range of normalized MCC into subranges
+  unit_len <- (max(mcc.nor_truncated) - min(mcc.nor_truncated)) / bins
+  # calculate the sum of mean distances from the left curve to the point (1, 1)
+  mean_distances_left <- 0
+  for (i in 1: bins){
+    # find all the points on the left curve with normalized MCC between unit_len*(i-1) and unit_len*i
+    pos1 <- which(mcc_left >= min(mcc.nor_truncated) + (i-1) * unit_len)
+    pos2 <- which(mcc_left <= min(mcc.nor_truncated) + i * unit_len)
+    pos <- c()
+    for (index in pos1){
+      if  (index %in% pos2){
+        pos <- c(pos, index)
+      }
+    }
+    sum_of_distance_within_subrange <- 0
+    for (index in pos){
+      d <- sqrt((mcc_left[index] - 1)^2 + (f_left[index] - 1)^2)
+      sum_of_distance_within_subrange <- sum_of_distance_within_subrange + d
+    }
+    mean_distances_left <- c(mean_distances_left, sum_of_distance_within_subrange / length(pos))
+  }
+
+  # get rid of NAs in mean_distances_left and sum the mean distances
+  num_of_na_left <- sum(is.na(mean_distances_left))
+  sum_of_mean_distances_left_no_na <- sum(mean_distances_left, na.rm = T)
+
+  # calculate the sum of mean distances from the right curve to the point (1, 1)
+  mean_distances_right <- 0
+  for (i in 1: bins){
+    # find all the points on the right curve with normalized MCC between unit_len*(i-1) and unit_len*i
+    pos1 <- which(mcc_right >= min(mcc.nor_truncated) + (i-1) * unit_len)
+    pos2 <- which(mcc_right <= min(mcc.nor_truncated) + i * unit_len)
+    pos <- c()
+    for (index in pos1){
+      if  (index %in% pos2){
+        pos <- c(pos, index)
+      }
+    }
+    sum_of_distance_within_subrange <- 0
+    for (index in pos){
+      d <- sqrt((mcc_right[index] - 1)^2 + (f_right[index] - 1)^2)
+      sum_of_distance_within_subrange  <-  sum_of_distance_within_subrange + d
+    }
+    mean_distances_right <- c(mean_distances_right, sum_of_distance_within_subrange / length(pos))
+  }
+
+  # get rid of NAs in mean_distances_right and sum the mean distances
+  num_of_na_right <- sum(is.na(mean_distances_right))
+  sum_of_mean_distances_right_no_na <- sum(mean_distances_right, na.rm = T)
+
+  # calculate the MCC-F1 metric
+  mccf1_metric <- 1 - ((sum_of_mean_distances_left_no_na + sum_of_mean_distances_right_no_na) /
+                         (bins*2 - num_of_na_right - num_of_na_left)) / sqrt(2)
+
+  # find the best threshold
+  best_threshold <- object %>%
+      mutate(dist = sqrt((1 - f1)^2 + (1-mcc.nor)^2)) %>% # Pythagoras (distance to (1,1))
+      filter(dist <= min(dist, na.rm = TRUE))
+  
+  # output of the function is the MCC-F1 metric and the top threshold
+  mccf1_result <- data.frame(mccf1_metric = mccf1_metric, best_threshold = best_threshold$preds[1])
+
+  return(mccf1_result)
+}
+```

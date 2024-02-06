@@ -1,0 +1,501 @@
+---
+title: "Prediction of Delisting using a Machine Learning Ensemble"
+author: "David Neuhäusler, Jungyeon Yoon, Richard A. Levine, Juanjuan Fan"
+date: "February 2024"
+site: bookdown::bookdown_site
+documentclass: book
+description: |
+  R markdown file for the project "Prediction of Delisting using a Machine 
+  Learning Ensemble"
+link-citations: yes
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, warning = FALSE
+)
+```
+
+# Introduction
+```{r load_packages, include=TRUE}
+library(plyr) # tools for splitting, applying and combining data
+library(tidyverse) # collection of R packages designed for data science
+library(patchwork) # simple layouts for ggplot2
+library(ggpubr) # customize ggplot2 plots
+library(ggtext) # simple Markdown and HTML rendering for ggplot2
+library(glue) # R expression embedding for strings
+library(formattable) # formatter functions
+library(latex2exp) # use LaTeX in plots
+library(pander) # rendering of R objects into markdown
+library(lubridate) # dates and times
+
+library(rsample) # functions for resampling
+library(mice) # missing data imputation models
+library(mltools) # machine learning helper functions
+
+library(parallel) # parallel processing for randomForestSRC
+
+library(randomForestSRC) # random forest implementation
+library(glmnet) # generalized linear models with penalization terms
+library(kernlab) # kernel-based machine learning methods
+library(gbm) # generalized boosted regression models
+
+library(devtools) # required for reticulate
+library(reticulate) # embeds Python session within R session
+library(tensorflow) # open-source machine learning platfrom
+# install_tensorflow()
+library(keras) # high-level API to build and train deep learning models
+# install_keras()
+
+library(caret) # misc functions for training and plotting ml models
+library(caretEnsemble) # create ensemble of caret models
+
+library(testthat) # testing framework for R
+library(testrmd) # testing output for Rmd-files
+
+theme_set(theme_minimal() %+replace%
+  theme(
+    # plot title
+    plot.title = element_text(
+      size = rel(1.3), face = "bold",
+      margin = margin(0, 0, 5, 0), hjust = 0
+    ),
+    # plot panel
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    # axes
+    axis.title = element_text(size = rel(0.85), face = "bold"),
+    axis.text = element_text(size = rel(0.70), face = "bold"),
+    axis.line = element_line(color = "black"),
+    # legend
+    legend.title = element_text(size = rel(0.85), face = "bold"),
+    legend.text = element_text(size = rel(0.70), face = "bold"),
+    legend.key = element_rect(fill = "transparent", colour = NA),
+    legend.key.size = unit(1.5, "lines"),
+    legend.background = element_rect(fill = "transparent", colour = NA),
+    # plot facets
+    strip.background = element_rect(fill = "black", color = "black"),
+    strip.text = element_text(
+      size = rel(0.85), face = "bold", color = "white",
+      margin = margin(5, 0, 5, 0)
+    )
+  ))
+colors <- c(
+  "#000000", "#555555", "#999999",
+  "#0072B2", "#009E73", "#E69F00", "#D55E00",
+  "#F0E442", "#CC79A7", "#56B4E9"
+)
+names(colors) <- c(
+  "black", "gray", "lightgray", "blue", "green",
+  "orange", "red", "yellow", "magenta", "lightblue"
+)
+
+testrmd::init()
+
+# randomForestSRC: OpenMP uses all available cores
+options(rf.cores = detectCores(), mc.cores = detectCores())
+```
+
+```{r define_constants, include = TRUE}
+set.seed(1)
+
+# data constants
+REBUILD_INITIAL_DATA_SET <- FALSE
+REBUILD_PREDICTOR_DATA_SET <- FALSE
+IS_QUARTERLY_DATA <- TRUE
+FIRST_TRADING_DATE_AVAILABLE <- ymd("1970-01-01")
+LAST_TRADING_DATE_AVAILABLE <- ymd("2022-12-30")
+NUMBER_YEARS_AVAILABLE <- interval(FIRST_TRADING_DATE_AVAILABLE, LAST_TRADING_DATE_AVAILABLE) / years(1)
+MAX_DATE <- ymd("2999-12-30")
+
+# constants for data preparation
+CORRELATION_THRESHOLD <- 0.75
+N_QUARTERS_GAP_TO_DELISTING <- 1
+N_QUARTERS_FIN_RATIOS <- 4
+N_QUARTERS_FIN_RATIOS_REQUIRED <- N_QUARTERS_FIN_RATIOS + N_QUARTERS_GAP_TO_DELISTING
+N_YEARS_FIN_RATIO_HISTORY <- 7
+
+# imputation constants
+REDO_MICE_IMPUTATION_PPM <- FALSE
+
+# model constants
+REDO_MODEL_FITTING <- FALSE
+
+# returns TRUE if years to delisting is betwwen 0.25 and 1.25
+determine_delisting_property <- function(years_to_delisting) {
+  return(0.25 <= years_to_delisting & years_to_delisting < 1.25)
+}
+```
+
+# Data
+
+## Delisting, financial and macroeconomic data
+The data sources for this code chunk are the two databases of the Center for 
+Research in Security Prices (CRSP) and Wharton Research Data Services (WRDS).
+The code snippet creates a data frame containing delisting and quarterly 
+financial information for securities. `com_ratio` is the name of the resulting 
+data frame.
+```{r from_raw_data_to_initial_data_set, include = TRUE}
+if (REBUILD_INITIAL_DATA_SET) {
+  # Author: Jungyeon Yoon
+  #-----------------------------------------------
+  # [delist file] : CRSP - Annual Update - Stock / Events - Delist
+  # variables : permno, dlstdt, dlstcd, nwperm, nwcomp, cusip
+  # - permno  double	CRSP Permanent Issue Number (permno)
+  # - dlstdt	date	Delisting Date (dlstdt)
+  # - dlstcd	double	Delisting Code (dlstcd)
+  # - nwperm	double	New CRSP Permno (nwperm)
+  # - nwcomp	double	New CRSP Permco (nwcomp)
+
+  # [com_info file] : CRSP - Annual Update - Stock / Security Files - Stock Header Info
+  # variables : permno, permco, hsiccd, hshrcd, hcomnam, begdat, enddat
+  # - permno  double	CRSP Permanent Issue Number (permno)
+  # - permco	double	CRSP Permanent Company Number (permco)
+  # - hsiccd	double	Header SIC Code (hsiccd)
+  # - HSHRCD	double	Share Code Header (HSHRCD)
+  # - HCOMNAM	string	Company Name Header (HCOMNAM)
+  # - BEGDAT	date	Begin of Stock Data (BEGDAT)
+  # - ENDDAT	date	End of Stock Data (ENDDAT)
+
+  #------------------------------------------------
+  # loading saved delist and com_info datasets
+
+  load("../data/delist.RData") # delist : permno
+  # dim(delist) # 36945     6
+
+  load(file = "../data/com_info.RData") # com_info : permno permco
+  # dim(com_info) # 36974     7
+
+  #----------------------------
+  # combine delist and com_info and make one combined dataset(comp)
+  comp0 <- com_info %>%
+    left_join(delist, by = c("permno" = "permno"))
+
+  # data ranges
+  range(comp0$begdat) # "1925-12-31" "2022-12-30"
+  range(comp0$enddat) # "1926-02-24" "2022-12-30"
+
+  # remove obs with Delisting Date (dlstdt) is missing
+  comp <- comp0 %>% filter(!is.na(dlstdt))
+
+  # nrow(comp) # 29 observations removed
+  comp <- comp %>% mutate(days = enddat - begdat)
+
+  # subset companies that listed from 1970
+  start_d <- as.Date("1970-01-01")
+  end_d <- as.Date("2022-12-30")
+  comp <- comp %>% filter(days > 0 & begdat >= start_d)
+
+  nrow(comp) # 33336
+
+  range(comp$begdat) # "1970-01-06" "2022-12-29"
+  range(comp$enddat) # "1970-12-29" "2022-12-30"
+
+  # delisting code as group
+  range(comp$dlstcd) # 100-591
+
+  # categorize delisting group (Active, Mergers, Exchanges, Liquidation, Dropped)
+  comp <- comp %>%
+    mutate(event = substr(dlstcd, 1, 1)) %>%
+    mutate(event_group = factor(event,
+      label = c("active", "mergers", "exchanges", "liquidation", "dropped")
+    ))
+
+  table(comp$event_group)
+  #   Active     Mergers   Exchanges Liquidation     Dropped
+  #     9259       11868         857        1916        9436
+
+  # [US listing gap] To obtain annual counts of the number of U.S. listed domestic firms, we use the Center for Research in Security Prices (CRSP) and Compustat databases because information on firm characteristics such as size and industry is not available from the WDI/WFE data set. We use CRSP to identify firms listed on Amex, Nasdaq, or NYSE. We include U.S. common stocks (share codes 10 and 11) and exclude investment funds and trusts (Standard Industrial Classification (SIC) codes 6722, 6726, 6798, and 6799).
+
+  range(comp$hsiccd) # SIC code :  0-9999
+  table(comp$hshrcd) # Share Code Header
+
+  # filtering data : exclude SIC code(hsiccd) = 6722, 6726, 6798, and 6799 and include Share Code(hshrcd) = 10, 11
+
+  # [re-categorize delisting, US listing gap] We follow Fama and French (2004) in categorizing CRSP delist codes 200<U+2013>399 as mergers and codes 400 and above as delists for cause, except for codes 570 and 573 (voluntary delists), we include them as well
+  # For now, I include Active, Liquidation, Dropped
+
+  com_sub <- comp %>%
+    filter(hshrcd %in% c(10, 11) &
+      !hsiccd %in% c(6722, 6726, 6798, 6799) &
+      event_group %in% c("active", "liquidation", "dropped"))
+  # mutate(event_group_new = ifelse(event_group == 'Active', 'NotActive', 'NotActive'))
+
+  save(com_sub, file = "../data/com_sub.RData")
+
+  #-----------------------------------------------
+  # wrds ratios
+  # company identifiers :
+  # PERMNO :	PERMNO
+  # GVKEY	:	Global Company Key
+  # CUSIP	:	CUSIP IDENTIFIER - HISTORICAL
+  # TICKER : EXCHANGE TICKER SYMBOL - HISTORICAL
+  # Dates :
+  # adate : fiscal year end
+  # qdate : fiscal quarter end
+  # public_date : public date (date when the information becomes public)
+  #----------------------------------------------
+
+  load("../data/comp_ratio.RData") # comp_ratio : permno / monthly time series
+  dim(comp_ratio) # 2752175      98
+  # head(comp_ratio)
+  range(comp_ratio$public_date) # "1970-01-31" "2022-12-31"
+
+  # gvkey and permno can be different. PERMNO is a unique stock (share class) level identifier assigned by CRSP to all companies listed in CRSP dataset. GVKEY (Global Company Key) is a unique number assigned to each company in the Compustat-Capital IQ database. => I will use permno. so keep one gvkey if one permno has two gvkey (e.g. permno == 10258 / gvkey = 012381, 179598)
+
+  com_ratio <- comp_ratio %>%
+    arrange(permno, public_date) %>%
+    group_by(permno) %>%
+    distinct(public_date, .keep_all = TRUE)
+
+  load(file = "../data/com_sub.RData") # com_sub
+  no1 <- unique(com_sub$permno)
+  no2 <- unique(com_ratio$permno)
+
+  length(no1) # 12186
+  length(no2) # 20691
+  overlap_no <- intersect(no1, no2)
+  length(overlap_no) # 9474
+
+  com_ratio <- com_ratio %>% select(
+    -ffi10, -ffi10_desc, -ffi12, -ffi12_desc, -ffi17, -ffi17_desc, -ffi30, -ffi30_desc, -ffi38, -ffi38_desc, -ffi48, -ffi48_desc, -ffi49, -ffi49_desc, -ffi5, -ffi5_desc, -gicdesc,
+    -gsector, -gvkey, -price, -ticker, -adate, -qdate
+  )
+
+  # combining financial ratios with company listing information
+  # filtering financial ratios whose dates are later than end date (use only the info available up to delisting)
+
+  com_ratio_monthly <- com_ratio %>%
+    inner_join(com_sub, by = "permno") %>%
+    arrange(permno, public_date) %>%
+    select(
+      -dlstcd, -nwperm, -nwcomp, -cusip.y, -days, -event, #-event_group,
+      -dlstdt, -cusip.x
+    ) %>%
+    filter(enddat > public_date)
+
+  save(com_ratio_monthly, file = "../data/monthly.RData")
+
+  #----------------------
+  # load('Data/monthly.RData') # com_ratio_monthly
+  #----------------------
+  if (IS_QUARTERLY_DATA) {
+    # quarterly data (checked quarterly data has month = 3, 6, 9 , 12)
+    com_ratio_q <- com_ratio_monthly %>%
+      mutate(month = format(as.Date(public_date, format = "%Y-%m-%d"), "%m")) %>%
+      filter(month %in% c("03", "06", "09", "12")) %>%
+      select(-month)
+
+    save(com_ratio_q, file = "../data/quarterly.RData")
+  } else {
+    # annual data (checked annual data has dates = year-12-31)
+    com_ratio_a <- com_ratio_monthly %>%
+      mutate(month = format(as.Date(public_date, format = "%Y-%m-%d"), "%m")) %>%
+      filter(month == "12") %>%
+      select(-month)
+
+    save(com_ratio_a, file = "../data/annually.RData")
+  }
+  remove(com_info, com_ratio_monthly, com_sub, comp, comp_ratio, comp0, delist)
+} else {
+  if (IS_QUARTERLY_DATA) {
+    load("../data/quarterly.RData")
+  } else {
+    load("../data/annually.RData")
+  }
+}
+
+# load initial data set
+com_ratio <- NULL
+if (IS_QUARTERLY_DATA) {
+  com_ratio <- com_ratio_q
+  remove(com_ratio_q)
+} else {
+  com_ratio <- com_ratio_a
+  remove(com_ratio_a)
+}
+```
+
+```{r, include=FALSE}
+# print(paste("Number of companies in CRSP but not WRDS data set:",
+#             length(setdiff(unique(com_sub$permno), unique(comp_ratio$permno)))))
+
+print(paste("Number of shares (permno):", com_ratio %>% select(permno) %>% n_distinct()))
+print(paste("Number of companies (permco):", com_ratio %>% select(permco) %>% n_distinct()))
+
+com_ratio %>% filter(hcomnam == "PARAMOUNT GLOBAL")
+
+# permco == permno for every share
+# com_info %>%
+#    full_join(com_info, by = c("permno" = "permno")) %>% filter(permco.x != permco.y) %>% n_distinct()
+```
+
+Tests of completeness and coherence of data frame `com_ratio`.
+```{r test:initial_data, test = TRUE}
+com_ratio <- com_ratio %>% ungroup()
+
+# test: public_date <= LAST_TRADING_DATE_AVAILABLE
+expect_true(com_ratio %>% select(public_date) %>%
+  summarize(max = max(public_date)) <= LAST_TRADING_DATE_AVAILABLE)
+# test: public_date >= FIRST_TRADING_DATE_AVAILABLE
+expect_true(com_ratio %>% select(public_date) %>%
+  summarize(min = min(public_date)) >= FIRST_TRADING_DATE_AVAILABLE)
+
+# test: enddat <= LAST_TRADING_DATE_AVAILABLE
+expect_true(com_ratio %>% select(enddat) %>%
+  summarize(max = max(enddat)) <= LAST_TRADING_DATE_AVAILABLE)
+# test: enddat >= FIRST_TRADING_DATE_AVAILABLE
+expect_true(com_ratio %>% select(enddat) %>%
+  summarize(min = min(enddat)) >= FIRST_TRADING_DATE_AVAILABLE)
+
+# test: every company has exactly one begdat
+expect_true(all(com_ratio %>% group_by(permno) %>%
+  summarize(begdat_diff = as.numeric(max(begdat) - min(begdat))) %>% select(begdat_diff) == 0))
+
+# test: every company has exactly one enddat
+expect_true(all(com_ratio %>% group_by(permno) %>%
+  summarize(begdat_diff = as.numeric(max(enddat) - min(enddat))) %>% select(begdat_diff) == 0))
+
+# test: every company is listed for a positive amount of days
+expect_true(all(com_ratio %>% mutate(days_listed = as.numeric(enddat - begdat)) %>% select(days_listed) > 0))
+```
+
+Select columns of interest for further analyses
+```{r load_intial_data_set}
+# store information about company feature names and their identifiers
+com.features <- tibble(
+  name = c(
+    "Permanent Security Identification Number (unique)",
+    "Public Date",
+    "Standard Industrial Classification (SIC) Code - Header",
+    "Share Code - Header",
+    "Company Name - Header",
+    "Begin of Stock Data",
+    "End of Stock Data",
+    "Delisting Indicator"
+  ),
+  identifier = c(
+    "permno",
+    "public_date",
+    "hsiccd",
+    "hshrcd",
+    "hcomnam",
+    "begdat",
+    "enddat",
+    "event_group"
+  )
+)
+
+# store information about financial ratio feature names and their identifiers
+com.features.fin <- tibble(
+  name = c(
+    "Capitalization Ratio",
+    "Asset Turnover",
+    "Inventory Turnover",
+    "Receivables Turnover",
+    "Payables Turnover",
+    "Cash Ratio",
+    "Current Ratio",
+    "Quick Ratio",
+    "After-tax Return on Average Common Equity",
+    "After-tax Return on Total Stockholders<U+2019> Equity",
+    "Gross Profit Margin",
+    "Operating Profit Margin After Depreciation",
+    "Operating Profit Margin Before Depreciation",
+    "Return on Assets",
+    "Return on Equity",
+    "Debt to Equity Ratio",
+    "Debt Ratio",
+    "Solvency Ratio (Liabilities / Total Assets)",
+    "Price-to-Earnings"
+  ),
+  identifier = c(
+    "capital_ratio",
+    "at_turn",
+    "inv_turn",
+    "rect_turn",
+    "pay_turn",
+    "cash_ratio",
+    "curr_ratio",
+    "quick_ratio",
+    "aftret_eq",
+    "aftret_equity",
+    "gpm",
+    "opmad",
+    "opmbd",
+    "roa",
+    "roe",
+    "de_ratio",
+    "debt_assets",
+    "debt_at",
+    "pe_exi"
+  )
+)
+
+com <- as_tibble(com_ratio) %>%
+  select(
+    com.features$identifier, com.features.fin$identifier
+  ) %>%
+  mutate(
+    event_group = factor(
+      ifelse(event_group %in% c("liquidation", "dropped"), "delisted", "active"),
+      levels = c("delisted", "active")
+    ),
+    years_to_delisting =
+    # convention: use the year MAX_DATE as delisting date
+    # if '2022-12-31' set as enddat in initial data set
+      ifelse(enddat >= LAST_TRADING_DATE_AVAILABLE,
+        time_length(interval(public_date, MAX_DATE), "year"),
+        time_length(interval(public_date, enddat), "year")
+      )
+  ) %>%
+  arrange(public_date)
+
+remove(com_ratio)
+```
+
+Macroeconomic features may improve model accuracy if delistings are affected by the overall economic situation. This behavior seems reasonable and will be checked in the exploratory data analysis. The data set with macroeconomic data contains the annual rate of change of four indices quarterly.\
+* **gdpc1**: rate of change of the [Real Gross Domestic Product](https://fred.stlouisfed.org/series/GDPC1), the inflation adjusted value of the goods and services produced by labor and property located in the United States\
+* **cpiaucsl**: rate of change of the [Consumer Price Index for All Urban Consumers](https://fred.stlouisfed.org/series/CPIAUCSL)\
+* **fredfunds**: rate of change of the [Federal Funds Effective Rate](https://fred.stlouisfed.org/series/FEDFUNDS), the average interest rate at which depository institutions trade federal funds (balances held at Federal Reserve Banks) with each other overnight\
+* **sp500**: rate of change of the [S&P 500](https://www.spglobal.com/spdji/en/indices/equity/sp-500) index which includes 500 leading companies in the United States and covers approximately 80% of the available market capitalization. The source of these index values is Bloomberg.
+
+This chunk loads annual changes of macroeconomic data into the data frame `macro.ratios` in quartetly intervals.
+```{r macroeconomic_variables}
+# compute rate of change for a vector with quarterly entries
+rate_of_change <- function(vector) {
+  n <- length(vector)
+  return(c(0, 0, 0, 0, vector[5:n] / vector[1:(n - 4)] - 1))
+}
+
+# compute absolute annual difference for a vector with quarterly entries
+one_year_difference <- function(vector) {
+  n <- length(vector)
+  return(c(0, 0, 0, 0, vector[5:n] - vector[1:(n - 4)]))
+}
+
+# gdpc1 Real Gross Domestic Product (https://fred.stlouisfed.org/series/GDPC1)
+# cpiaucsl Consumer Price Index for All Urban Consumers: All Items in U.S. City Average (https://fred.stlouisfed.org/series/CPIAUCSL)
+# fredfunds Federal Funds Effective Rate (https://fred.stlouisfed.org/series/FEDFUNDS)
+# sp500 annual rate of return from Bloomberg Terminal
+macro.measures <- read_csv("../data/macroeconomic_measures.csv")
+macro.ratios <- macro.measures %>%
+  mutate(
+    gdpc1_chg = rate_of_change(gdpc1),
+    cpiaucsl_chg = rate_of_change(cpiaucsl),
+    fredfunds_chg = one_year_difference(fredfunds),
+    sp500_chg = rate_of_change(sp500)
+  ) %>%
+  select(-gdpc1, -cpiaucsl, -fredfunds, -sp500) %>%
+  filter(FIRST_TRADING_DATE_AVAILABLE <= observation_date &
+    observation_date <= LAST_TRADING_DATE_AVAILABLE)
+
+macro.ratios.name <- c(
+  gdpc1_chg = "GDP (rate of change)",
+  cpiaucsl_chg = "CPI (rate of change)",
+  fredfunds_chg = "federal funds rate (1-year diff.)",
+  sp500_chg = "S&P 500 (rate of change)"
+)
+
+pander(head(macro.ratios))
+```

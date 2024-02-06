@@ -1,0 +1,480 @@
+## Predictor data set
+
+<!--### Validate data set
+ - How much efforts and details for data validation? How many (randomized) rows should be checked?
+ - Example: Immuogen Inc 2019 ([Annual Report 2019]( https://investor.immunogen.com/static-files/53288d18-b7b6-4900-b215-f51c3bda9468]))
+-->
+### Identifiy duplicates
+```{r, duplicated_rows}
+# number of duplicate rows
+paste("Number of duplicate rows:", com %>% duplicated() %>% sum())
+```
+
+### Missing data
+```{r, missing_data_profile}
+#' Missing data profile as bar chart
+#'
+#' @param data tibble containing financial ratios for companies
+#'
+#' @return bar chart showing percentages of missing data for each feature in data
+plot_missing_data_profile <- function(data) {
+  data_missing_data_profile <- data %>%
+    summarize(across(everything(), ~ sum(is.na(.x)))) %>%
+    pivot_longer(
+      cols = everything(),
+      names_to = "variable",
+      values_to = "number_missing_values"
+    ) %>%
+    mutate(percent_missing_values = number_missing_values / nrow(com))
+
+  plot_missing_data_profile <- data_missing_data_profile %>% ggplot(
+    aes(x = reorder(variable, -number_missing_values), y = percent_missing_values)
+  ) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    geom_text(aes(label = paste0(format(100 * percent_missing_values, digits = 2), "%")),
+      hjust = 1,
+      colour = "white"
+    ) +
+    labs(
+      title = "Missing data profile",
+      y = "Percentage of missing rows",
+      x = "Features"
+    )
+
+  return(plot_missing_data_profile)
+}
+
+plot_missing_data_profile(com %>% select(com.features.fin$identifier))
+```
+
+More than every fourth value for the feature $\textt{inv_turn}$ (inventory turnover) is missing.\
+
+### Predictior data set
+```{r, functions.data.preparation}
+#' imputes missing values for a specific data set given
+#'
+#' @param data company data including financial ratio columns
+#' @param test_indicator indicator vector with the same length as nrow(data) containing
+#'        TRUE if corresponding row in data belongs to the test set
+#'        otherwise FALSE
+#' @param method method to use for imputation, currently "pm" predictive mean matching
+#'
+#' @return imputed data set
+data.prepare.impute <- function(data, test_indicator, method = "pmm") {
+  data_imputed <- NULL
+
+  if (method == "pmm") {
+    if (REDO_MICE_IMPUTATION_PPM) {
+      data_imputed <- complete(mice(data,
+        method = "pmm",
+        ignore = test_indicator,
+        m = 5,
+        visitSequence = "monotone",
+        maxit = 5
+      ))
+      save(data_imputed, file = "../data/com_imputed.RData")
+    } else {
+      load("../data/com_imputed.RData")
+    }
+  }
+  return(data_imputed)
+}
+
+#'  computes historical change features for several features listed in
+#'  feature_identifier
+#'  performs regression of financial ratio values on the available report dates
+#'  of the past five years for each company and takes the fitted slope
+#'  coefficient as historical change feature
+#'
+#' @param data company data including financial ratio columns and column
+#'             public_date_selected
+#' @param feature_identifier list of technical feature identifier of interest
+#'
+#' @return data set with historical change features
+data.prepare.history <- function(data, feature_identifier) {
+  # add features containing slope of historical financial data
+  for (feature in feature_identifier) {
+    feature_history_name <- paste0(feature, "_h")
+    com_slope <- data %>%
+      group_by(permno) %>%
+      # use at most 5 years of history of financial ratios
+      filter(public_date_selected - years(5) <= public_date & public_date <= public_date_selected) %>%
+      # compute slope coefficient on filtered and grouped subset for a 5-year time period
+      summarize(!!feature_history_name :=
+        lm((!!as.symbol(feature)) ~ public_date)$coefficients[2])
+    data <- data %>% left_join(com_slope, by = join_by(permno))
+  }
+
+  return(data %>% replace(is.na(.), 0)) # !!!!!!!!!!!!!!!!!!!!
+}
+
+#' prepares company data for model training and testing purposes
+#'
+#' @param com_data company data including financial ratio columns
+#' @param response company data including columns permno and response which
+#'                 determines response variable for each company in com_data
+#' @param com_subset company data with permno and public_date of a (sub)set of
+#'                   companies
+#' @param macro_data macro-economic data
+#' @param feature_identifier vector containing column names of financial ratio
+#'                           features to select column in com_data
+#'
+#' @return data set with four subsequent report dates for each company and
+#'         public_date specified in com_subset joined with macro-economic features
+data.prepare <- function(com_data, com.subset, macro.data, feature.identifier) {
+  # number of companies in com_data
+  print(com_data$permno %>% unique() %>% length())
+
+  data.prepared <- com_data %>% arrange(desc(public_date))
+
+  # join financial ratios with selected permno and public_date rows
+  data.prepared <- com_data %>%
+    right_join(com.subset, by = join_by(permno), suffix = c("", "_selected"))
+
+  # add historic development features (5 year history)
+  data.prepared <- data.prepare.history(data.prepared, feature.identifier) %>%
+    filter(public_date == public_date_selected) %>%
+    select(-public_date_selected)
+
+  # add features with macro data ratios (gdp, inflation, interest, sp500)
+  data.prepared <- data.prepared %>%
+    left_join(macro.data,
+      by = join_by(closest(x$public_date >= y$observation_date))
+    ) %>%
+    select(-observation_date)
+
+  # check if n_companies reduced -> should not change
+  # number of companies in com_data
+  print(data.prepared$permno %>% unique() %>% length())
+  # check for one row per company
+  print(paste(
+    "Does every company have exactly one row in data.prepared? -",
+    nrow(data.prepared) == (data.prepared$permno %>% unique() %>% length())
+  ))
+
+  return(data.prepared)
+}
+
+#' sample random report date (public_date) for each company
+#'
+#' @param data company data including columns permno, public_date
+#' @return tibble with columns permno and public_date containing companies and
+#'         public_date for train set
+com.time_points <- function(data) {
+  # contains exactly one random report date for every company, for every
+  # delisted company a report date which is more than 3 months before delisting
+  com.time_points.result <- data %>%
+    arrange(public_date) %>%
+    group_by(permno, event_group) %>%
+    # require at least 3 subsequent quarters of financial ratios
+    filter((event_group == "delisted" & row_number() >= 3) |
+      (event_group == "active" & row_number() >= 3)) %>%
+    slice_sample(n = 1) %>%
+    ungroup() %>%
+    select(permno, public_date, response)
+
+  return(com.time_points.result)
+}
+```
+
+### Prepare predictor data set
+```{r, data_preparation}
+# remove features that meet threshold in chunk correlated_features_detect_removals
+com.features.fin <- com.features.fin %>% filter(!identifier %in% feature_indicators_to_remove)
+# com <- com %>% select(-feature_indicators_to_remove)
+
+# list companies and the number of quarters in which they reported financial ratio dates
+com.quarters_per_company <- com %>%
+  group_by(permno) %>%
+  summarize(
+    n_quarters = n(),
+    .groups = "drop"
+  )
+paste("Number of companies in data set:", com$permno %>% unique() %>% length())
+paste(
+  "Number of companies < 4 financial ratio dates:",
+  nrow(com.quarters_per_company %>% filter(n_quarters < N_QUARTERS_FIN_RATIOS))
+)
+paste(
+  "Number of companies >= 4 financial ratio dates:",
+  nrow(com.quarters_per_company %>% filter(n_quarters >= N_QUARTERS_FIN_RATIOS))
+)
+
+# remove companies that have less than N_QUARTERS_FIN_RATIO_REQUIRED reported financial ratio dates
+com <- com.quarters_per_company %>%
+  inner_join(com, by = join_by(permno)) %>%
+  filter((n_quarters >= N_QUARTERS_FIN_RATIOS & event_group == "active") |
+    (n_quarters >= N_QUARTERS_FIN_RATIOS_REQUIRED & event_group == "delisted")) %>%
+  # exclude gap of 3 months from predictor data set
+  filter(time_length(interval(public_date, enddat), "year") >= 0.25) %>%
+  select(-n_quarters)
+
+# winsorize features
+com <- data.prepare.winsorize(com, com.features.fin$identifier)
+
+# determine response variable associated with company: "delisted" or "active"
+com.response <- com %>%
+  mutate(response = ifelse(
+    determine_delisting_property(time_length(interval(public_date, enddat), "year")) &
+      event_group != "active",
+    "delisted",
+    "active"
+  ) %>% as.factor()) %>%
+  select(permno, public_date, event_group, response)
+
+set.seed(1)
+# sample one random public_date for each company
+# tibble containing columns permno and public_date for each company in com
+com.time_points.sample <- com.time_points(com.response)
+
+# train test split (75%|25%), stratified sampling based on response feature
+com.split <- initial_split(com.time_points.sample, strata = response, prop = 0.75)
+com.train <- training(com.split)
+com.test <- testing(com.split)
+
+# indicate for each company if it belongs to training or testing set
+com <- com %>% mutate(test_indicator = !permno %in% com.train$permno)
+test_indicator <- com$test_indicator
+
+# impute data
+com.imputed <- data.prepare.impute(
+    com %>% select(com.features.fin$identifier),
+    com$test_indicator, "pmm"
+  ) %>%
+  mutate(
+    permno = com$permno,
+    public_date = com$public_date
+  )
+
+if (REBUILD_PREDICTOR_DATA_SET) {
+  # training set
+  data.training <- data.prepare(
+    com.imputed %>%
+      select(permno, public_date, com.features.fin$identifier) %>%
+      filter(!test_indicator),
+    com.train,
+    macro.ratios,
+    com.features.fin$identifier
+  ) %>% mutate(response = as.factor(response))
+  save(data.training, file = "../data/data.training.RData")
+  
+  # test set
+  data.test <- data.prepare(
+    com.imputed %>%
+      select(permno, public_date, com.features.fin$identifier) %>%
+      filter(test_indicator),
+    com.test,
+    macro.ratios,
+    com.features.fin$identifier
+  ) %>% mutate(response = as.factor(response))
+  save(data.test, file = "../data/data.test.RData")
+} else {
+  load("../data/data.training.RData")
+  load("../data/data.test.RData")
+}
+```
+
+Test historical features of predictor data set for coherence by choosing random sample row
+```{r, test:predictor_data_set, test = TRUE}
+data.sample <- data.training[sample(1:nrow(data.training), size = 1), ]
+
+data.sample.history <- com %>%
+  filter(
+    permno == data.sample$permno,
+    data.sample$public_date - years(5) <= public_date &
+      public_date <= data.sample$public_date
+  ) %>%
+  select(public_date, capital_ratio)
+data.sample.history.lm <- lm(capital_ratio ~ public_date, data = data.sample.history)
+
+# ggplot(data = data.sample.history, aes(public_date, capital_ratio)) +
+#   geom_point() +
+#   geom_abline(slope = data.sample.history.lm$coefficients[2],
+#               intercept = data.sample.history.lm$coefficients[1])
+
+expect_true(data.sample$capital_ratio_h == data.sample.history.lm$coefficients[2])
+```
+
+```{r, data_preparation_characteristics}
+paste(
+  "Total number of companies:",
+  com.quarters_per_company %>% group_by(permno) %>% count() %>% nrow()
+)
+paste(
+  "Number of delisted companies:",
+  com %>% filter(event_group == "delisted") %>% group_by(permno) %>% count() %>% nrow()
+)
+paste(
+  "Total number of companies w/ at least five quarters:",
+  com %>% group_by(permno) %>% count() %>% nrow()
+)
+paste(
+  "Proportion of delisted companies:",
+  formatC(com %>% filter(!event_group %in% "active") %>% group_by(permno) %>% count() %>% nrow() /
+    com %>%
+      group_by(permno) %>%
+      count() %>%
+      nrow(), digits = 4)
+)
+paste(
+  "Median number of years of financial ratios for active companies:",
+  (com %>%
+    filter(event_group == "active") %>%
+    mutate(n_active_years = time_length(interval(begdat, LAST_TRADING_DATE_AVAILABLE), "year")))$n_active_years %>%
+    median(., na.rm = TRUE) %>%
+    formatC(., digits = 4)
+)
+
+paste("Proportion of companies in train set:", formatC(nrow(data.training) /
+  (nrow(data.training) + nrow(data.test)), digits = 2))
+paste(
+  "Number of companies in train set:",
+  data.training %>% group_by(permno) %>% count() %>% nrow()
+)
+paste(
+  "Number of delisted companies in train set:",
+  data.training %>% filter(response == "delisted") %>% group_by(permno) %>% count() %>% nrow()
+)
+paste(
+  "Number of active companies in train set:",
+  data.training %>% filter(response == "active") %>% group_by(permno) %>% count() %>% nrow()
+)
+paste(
+  "Proportion of delisted responses in train set:",
+  formatC(data.training %>% filter(response == "delisted") %>% group_by(permno) %>% count() %>% nrow() /
+    data.training %>%
+      group_by(permno) %>%
+      count() %>%
+      nrow(), digits = 4)
+)
+paste(
+  "Proportion of delisted responses in test set:",
+  formatC(data.test %>% filter(response == "delisted") %>% group_by(permno) %>% count() %>% nrow() /
+    data.test %>%
+      group_by(permno) %>%
+      count() %>%
+      nrow(), digits = 4)
+)
+paste(
+  "Median number of years of financial ratios for active companies in train set:",
+  formatC((data.training %>%
+    left_join(com, by = join_by(permno, public_date)) %>%
+    filter(response == "active") %>%
+    mutate(n_active_years = time_length(interval(begdat, public_date), "year")))$n_active_years %>%
+    median(., na.rm = TRUE), digits = 4)
+)
+paste("Are there missing cells in train set? -", any(colSums(is.na(data.training)) > 0))
+```
+
+```{r, demo}
+# sampled time points of financial ratios of active companies
+com.active.years <- com.time_points.sample %>%
+  left_join(com, by = join_by(permno, public_date)) %>%
+  filter(event_group == "active") %>%
+  group_by(year = floor_date(public_date, "year")) %>%
+  summarize(number_of_companies = n())
+
+com.active.frequency <- com %>%
+  filter(event_group == "delisted") %>%
+  group_by(permno) %>%
+  filter(row_number() == 1) %>%
+  ungroup() %>%
+  mutate(year = floor_date(ymd(enddat), "year")) %>%
+  group_by(year) %>%
+  summarize(
+    number_of_delistings = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    proportion_wanted = number_of_delistings / sum(number_of_delistings)
+  )
+
+com.active.begdat <- com.time_points.sample %>%
+  left_join(com, by = join_by(permno, public_date)) %>%
+  filter(event_group == "active") %>%
+  group_by(permno) %>%
+  filter(row_number() == 1) %>%
+  ungroup() %>%
+  group_by(year = floor_date(begdat, "year")) %>%
+  summarize(number_of_companies = n())
+
+subtitle <- glue(
+    '<span style="color:{colors["blue"]}">**Number of companies by begdat**</span>, ',
+    '<span style="color:{colors["orange"]}">**number of companies by public_date**</span>,<br>',
+    '<span style="color:{colors["magenta"]}">**ideal number of companies proportional to delisting**</span>'
+  )
+
+ggplot() +
+  geom_line(
+    data = com.active.years,
+    mapping = aes(x = year, y = number_of_companies, color = "# companies by public_date"),
+    linewidth = 1
+  ) +
+  geom_line(
+    data = com.active.frequency,
+    mapping = aes(
+      x = year, y = proportion_wanted * sum(com.active.years$number_of_companies),
+      color = "ideal # companies proportional to delisting"
+    ),
+    linewidth = 1
+  ) +
+  geom_line(
+    data = com.active.begdat,
+    mapping = aes(x = year, y = number_of_companies, color = "# companies by begdat"),
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    breaks = c(
+      "# companies by begdat", "# companies by public_date",
+      "ideal # companies proportional to delisting"
+    ),
+    values = c(
+      as.character(colors["blue"]),
+      as.character(colors["orange"]),
+      as.character(colors["magenta"])
+    )
+  ) +
+  labs(
+    title = "Number of active and listed companies",
+    subtitle = subtitle,
+    x = "year of financial ratios",
+    y = "Frequency"
+  ) +
+  theme(
+    plot.subtitle = element_markdown(),
+    legend.position = "none"
+  )
+```
+### Histograms of original vs imputed features
+The left histograms are based on features without imputation, the right histograms are based on imputed features.
+```{r, histrograms.imputed}
+for (i in 1:nrow(com.features.fin)) {
+  feature_description <- com.features.fin[[i, 1]]
+  feature_identifier <- com.features.fin[[i, 2]]
+
+  plot_without_imputation <- hist_delisting_frequency(
+    com.winsorized,
+    feature_identifier,
+    feature_description
+  )
+
+  plot_with_imputation_pmm <- hist_delisting_frequency(
+    com.imputed %>%
+      left_join(com.winsorized %>% select(permno, public_date, years_to_delisting), by = join_by(permno, public_date)),
+    feature_identifier,
+    feature_description
+  )
+
+  print(plot_without_imputation | plot_with_imputation_pmm)
+}
+
+print(paste(
+  "Number of missing cells in original data set: ",
+  com %>% summarize(n = sum(is.na(.)))
+))
+print(paste(
+  "Number of missing cells in imputed data set: ",
+  com.imputed %>% summarize(n = sum(is.na(.)))
+))
+```

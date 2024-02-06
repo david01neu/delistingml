@@ -1,0 +1,373 @@
+## Neural net
+
+```{r, model.neuralnet.caret}
+# function and object definitions for custom model in caret package
+# https://topepo.github.io/caret/using-your-own-model-in-train.html
+
+preProcValues <- preProcess(data.training, method = c("center", "scale"))
+
+# adjusted from https://github.com/topepo/caret/blob/master/models/files/mlpKerasDropout.R
+keras.list <- list(label = "Multilayer Perceptron Network",
+                  method = "keras",
+                  library = "keras",
+                  loop = NULL,
+                  type = c("Classification", "Regression"),
+                  parameters = data.frame(
+                    parameter = c('layer1', 'layer2', "layer3", 
+                                  "batch_size","activation", "regularization_factor",
+                                  "dropout_rate"),
+                    class = c(rep('numeric', 4), "character", rep("numeric", 2)),
+                    label = c("#units in hidden layer 1",
+                              "#units in hidden layer 2",
+                              "#units in hidden layer 3",
+                              "batch size", "activation Function",
+                              "regularization factor", "dropout rate")
+                  ),
+                  grid = function(x, y, len = NULL, search = "grid") {
+                    afuncs <- c("sigmoid", "relu", "tanh")
+                    if(search == "grid") {
+                      out <- expand.grid(
+                        layer1 = ((1:len) * 2) - 1, 
+                        layer2 = ((1:len) * 2) - 1,
+                        layer3 = ((1:len) * 2) - 1,
+                        batch_size = floor(nrow(x)/3),
+                        activation = "relu",
+                        regularization_factor = c(0.01, 0.001),
+                        dropout_rate = c(0.05, 0.2)
+                      )
+                    } else {
+                      n <- nrow(x)
+                      out <- data.frame(
+                        layer1 = sample(2:20, replace = TRUE, size = len),
+                        layer2 = sample(2:20, replace = TRUE, size = len),
+                        layer3 = sample(2:20, replace = TRUE, size = len),
+                        batch_size = floor(n*runif(len, min = .1)),
+                        activation = sample(
+                          afuncs, 
+                          size = len, 
+                          replace = TRUE
+                        ),
+                        regularization_factor = 0.01 * 10^(1:len),
+                        dropout_rate = seq(0.05, 0.5, length.out = len)
+                      )
+                    }
+                    out
+                  },
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
+                    require(dplyr)
+                    K <- keras::backend()
+                    K$clear_session()
+                    if(!is.matrix(x)) x <- as.matrix(x)
+                    model <- keras::keras_model_sequential()
+                    model %>%
+                      keras::layer_dense(name = "DeepLayer1",
+                                  units = param$layer1,
+                                  activation = as.character(param$activation),
+                                  input_shape = dim(x)[2],
+                                  kernel_regularizer = regularizer_l2(param$regularization_factor)) %>%  
+                      keras::layer_dropout(
+                        rate = param$dropout_rate
+                      ) %>%
+                      keras::layer_dense(name = "DeepLayer2",
+                                  units = param$layer2,
+                                  activation = as.character(param$activation),
+                                  kernel_regularizer = regularizer_l2(param$regularization_factor)) %>% 
+                      keras::layer_dropout(
+                        rate = param$dropout_rate
+                      ) %>%
+                      keras::layer_dense(name = "DeepLayer3",
+                                  units = param$layer3,
+                                  activation = as.character(param$activation),
+                                  kernel_regularizer = regularizer_l2(param$regularization_factor)) %>% 
+                      keras::layer_dropout(
+                        rate = param$dropout_rate
+                      ) %>%
+                      keras::layer_dense(name = "OutputLayer",
+                                  units = 1,
+                                  activation = "sigmoid")
+
+                    y <- class2ind(y)
+                    
+                    model %>%
+                      keras::compile(
+                        loss = "binary_crossentropy",
+                        optimizer = "adam", # https://arxiv.org/abs/1412.6980v8
+                        metric = "binary_accuracy"
+                      )
+                    model %>% keras::fit(
+                      x = x, 
+                      y = y[,2],
+                      batch_size = param$batch_size,
+                      epochs = 100,
+                      ...
+                    )
+                    
+                    if (last) {
+                      model <- keras::serialize_model(model)
+                    }
+                    
+                    list(object = model)
+                  },
+                  predict = function(modelFit, newdata, submodels = NULL) {
+
+                    if(inherits(modelFit$object, "raw"))
+                      modelFit$object <- keras::unserialize_model(modelFit$object)
+                    
+                    if(!is.matrix(newdata)) 
+                      newdata <- as.matrix(newdata)
+                    
+                    out <- predict(modelFit$object, newdata)
+                    # check for model type
+                    if(ncol(out) == 1) {
+                      out <- rep("active",length(out))#cbind(1-out[, 1], out[,1])
+                    } else {
+                      out <- modelFit$obsLevels[apply(out, 1, which.max)]
+                    }
+
+                    out
+                  },
+                  prob =  function(modelFit, newdata, submodels = NULL) {
+                    if(inherits(modelFit$object, "raw"))
+                      modelFit$object <- keras::unserialize_model(modelFit$object)
+                    
+                    if(!is.matrix(newdata)) 
+                      newdata <- as.matrix(newdata)
+
+                    out <- predict(modelFit$object, newdata)
+                    out <- cbind(1-out, out)
+                    colnames(out) <- modelFit$obsLevels
+                    as.data.frame(out, stringsAsFactors = TRUE)
+                  },
+                  varImp = NULL,
+                  tags = c("Neural Network"),
+                  sort = function(x) x,
+                  notes = paste("After `train` completes, the keras model object is serialized",
+                                "so that it can be used between R session. When predicting, the", 
+                                "code will temporarily unsearalize the object. To make the", 
+                                "predictions more efficient, the user might want to use ", 
+                                "`keras::unsearlize_model(object$finalModel$object)` in the current", 
+                                "R session so that that operation is only done once.",
+                                "Also, this model cannot be run in parallel due to",
+                                "the nature of how tensorflow does the computations.",
+                                "Finally, the cost parameter weights the first",
+                                "class in the outcome vector.",
+                                "Unlike other packages used by `train`, the `dplyr`",
+                                "package is fully loaded when this model is used."),
+                  check = function(pkg) {
+                    testmod <- try(keras::keras_model_sequential(),
+                                   silent = TRUE)
+                    if(inherits(testmod, "try-error"))
+                      stop("Could not start a sequential model. ",
+                           "`tensorflow` might not be installed. ",
+                           "See `?install_tensorflow`.", 
+                           call. = FALSE)
+                    TRUE
+                  })
+```
+
+**Model fit**
+```{r, model.neuralnet.fit}
+if (REDO_MODEL_FITTING) {
+  ### control the computational nuances of the train function ####################
+  keras.fitControl <- trainControl(method = "cv",
+                             number = 6,
+                             ## Estimate class probabilities
+                             classProbs = TRUE,
+                             #preProc = c("center", "scaling"),
+                             ## Evaluate performance using 
+                             ## the following function
+                             summaryFunction = compute.summary,
+                             returnResamp = "all"
+                             )
+  
+  ### fit model over different tuning parameters #################################
+  set.seed(1)
+  keras.fit <- caret::train(y = data.training$response,
+                   x = as.matrix(data.training %>% select(-permno, -public_date, -response)), 
+                   preProcess = c("center", "scale"),
+                   method = keras.list, 
+                   trControl = keras.fitControl, 
+                   tuneGrid = expand.grid(
+                     layer1 = c(35, 38),
+                     layer2 = c(20, 25),
+                     layer3 = c(12, 18),
+                     batch_size = c(16),
+                     activation = c("relu"),
+                     regularization_factor = c(0),
+                     dropout_rate = c(0, 0.1)),
+                   metric = "mcc.mccf1"
+                   ) # specify which metric to optimize
+  # Source: Dropout https://jmlr.org/papers/v15/srivastava14a.html
+  save(keras.fit, file = "../data/keras.fit.RData")
+} else {
+  load("../data/keras.fit.RData")
+}
+```
+
+**Model information and evaluation on training set**
+```{r, model.neuralnet.best_model}
+keras.bestTune.mccf1 <- keras.fit$resample %>%
+  group_by(layer1, layer2, layer3, batch_size, activation, regularization_factor, dropout_rate) %>%
+  summarize(mccf1 = mean(mcc.mccf1), .groups = "drop") %>%
+  slice(which.max(mccf1))
+
+keras.bestTune.roc <- keras.fit$resample %>%
+  group_by(layer1, layer2, layer3, batch_size, activation, regularization_factor, dropout_rate) %>%
+  summarize(auc = mean(auc.roc), .groups = "drop") %>%
+  slice(which.max(auc))
+
+# Hyperparameters of best models for MCC-F1 and ROC cutpoints
+hyperparameters.table <- tibble(
+  cutpoint = c("MCCF1", "ROC"),
+  layer1 = c(keras.bestTune.mccf1$layer1, keras.bestTune.roc$layer1),
+  layer2 = c(keras.bestTune.mccf1$layer2, keras.bestTune.roc$layer2),
+  layer3 = c(keras.bestTune.mccf1$layer3, keras.bestTune.roc$layer3),
+  batch_size = c(keras.bestTune.mccf1$batch_size, keras.bestTune.roc$batch_size),
+  activation = c(keras.bestTune.mccf1$activation, keras.bestTune.roc$activation),
+  regularization_factor = c(keras.bestTune.mccf1$regularization_factor, keras.bestTune.roc$regularization_factor),
+  dropout_rate = c(keras.bestTune.mccf1$dropout_rate, keras.bestTune.roc$dropout_rate)
+)
+
+pred.probability <- keras.fit %>% 
+   predict(data.training %>% select(-permno, -public_date), type = "prob")
+keras.metrics <- illustrate.metrics(hyperparameters.table, data.training$response, pred.probability$delisted)
+
+illustrate.metrics.boxplot(keras.fit$resample %>% filter(layer1 == hyperparameters.table$layer1[1] &
+                                                      layer2 == hyperparameters.table$layer2[1] &
+                                                      layer3 == hyperparameters.table$layer3[1] &
+                                                      batch_size == hyperparameters.table$batch_size[1] &
+                                                      activation == hyperparameters.table$activation[1] &
+                                                      regularization_factor == hyperparameters.table$regularization_factor[1] &
+                                                      dropout_rate == hyperparameters.table$dropout_rate[1]),
+                           keras.fit$resample %>% filter(layer1 == hyperparameters.table$layer1[2] &
+                                                      layer2 == hyperparameters.table$layer2[2] &
+                                                      layer3 == hyperparameters.table$layer3[2] &
+                                                      batch_size == hyperparameters.table$batch_size[2] &
+                                                      activation == hyperparameters.table$activation[2] &
+                                                      regularization_factor == hyperparameters.table$regularization_factor[2] &
+                                                      dropout_rate == hyperparameters.table$dropout_rate[2]),
+                           "keras")
+```
+
+**Performance evaluation on test set**
+```{r, model.neuralnet.test}
+# MCCF1 variant: prediction scores on test data ("active", "delisted")
+pred.test.probability <- predict(keras.fit, newdata = data.test, type = "prob")
+
+# ROC variant: fit model using best hyperparameters and 
+#              find best threshold and
+#              prediction scores on test data ("active", "delisted")
+if (REDO_MODEL_FITTING) {
+  set.seed(1)
+  keras.fit.roc <- train(response ~ ., data = data.training %>% select(-permno, -public_date),
+                   preProcess = c("center", "scale"),
+                   method = keras.list,
+                   trControl = trainControl(method = "cv", number = 10,
+                             classProbs = TRUE, summaryFunction = compute.summary), 
+                   tuneGrid = data.frame(
+                     layer1 = keras.bestTune.roc$layer1,
+                     layer2 = keras.bestTune.roc$layer2,
+                     layer3 = keras.bestTune.roc$layer3,
+                     batch_size = keras.bestTune.roc$batch_size,
+                     activation = keras.bestTune.roc$activation,
+                     regularization_factor = keras.bestTune.roc$regularization_factor,
+                     dropout_rate = keras.bestTune.roc$dropout_rate
+                   ),
+                   verbose = TRUE, 
+                   metric = "auc.roc") # specify which metric to optimize
+  save(keras.fit.roc, file = "../data/keras.fit.roc.RData")
+} else {
+  load("../data/keras.fit.roc.RData")
+}
+keras.metrics.roc.cutpoint <- compute.roc(
+  predict(keras.fit.roc, newdata = data.training, type = "prob")$delisted,
+  data.training$response)$best_cutpoint
+pred.test.probability.roc <- predict(keras.fit.roc, newdata = data.test, type = "prob")
+
+# metrics on test set using best threshold determined based on train data
+keras.summary.test <- rbind(compute.metrics(data.test$response, pred.test.probability.roc$delisted >= keras.metrics$cutpoint.roc),
+      compute.metrics(data.test$response, pred.test.probability$delisted >= keras.metrics$cutpoint.mccf1)) %>%
+  cbind(splitting = c("ROC", "MCCF1"), .)
+pander(keras.summary.test, caption = "Neural net on test data")
+```
+
+**Marginal plots**
+```{r, model.neuralnet.marginal}
+# marginal plots of features in com.features.fin on test data
+for (feature_identifier in com.features.fin$identifier) {
+  plot <- hist_delisting_frequency(
+      (data.test %>% 
+        inner_join(com %>% select(permno, public_date, years_to_delisting), by = join_by(permno, public_date))),
+      feature_identifier,
+      feature_identifier,
+      marginal.data = pred.test.probability$delisted
+    )
+  print(plot)
+}
+```
+
+```{r, eval = FALSE, include = FALSE}
+require(dplyr)
+x = data.training %>% select(-permno, -public_date, -response)
+                    K <- keras::backend()
+                    K$clear_session()
+                    if(!is.matrix(x)) x <- as.matrix(x)
+                    model <- keras::keras_model_sequential()
+                    model %>%
+                      keras::layer_dense(name = "DeepLayer1",
+                                  units = 50,
+                                  activation = "relu",
+                                  input_shape = dim(x)[2],
+                                  kernel_regularizer = regularizer_l2(0.01)) %>%  
+                      # keras::layer_dropout(
+                      #   rate = 0.1
+                      # ) %>%
+                      keras::layer_dense(name = "DeepLayer2",
+                                  units = 30,
+                                  activation = "relu",
+                                  kernel_regularizer = regularizer_l2(0.01)) %>% 
+                      # keras::layer_dropout(
+                      #   rate = param$dropout_rate
+                      # ) %>%
+                      keras::layer_dense(name = "DeepLayer3",
+                                  units = 18,
+                                  activation = "relu",
+                                  kernel_regularizer = regularizer_l2(0.01)) %>% 
+                      # keras::layer_dropout(
+                      #   rate = 0.1
+                      # ) %>%
+                      keras::layer_dense(name = "OutputLayer",
+                                  units = 1,
+                                  activation = "sigmoid")
+
+                    #y <- class2ind(y)
+                    
+                    model %>%
+                      keras::compile(
+                        loss = "binary_crossentropy",
+                        optimizer = "adam", # https://arxiv.org/abs/1412.6980v8
+                        metric = "binary_accuracy"
+                      )
+                    hist <- model %>% keras::fit(
+                      x = x, 
+                      y = (data.training$response == "delisted"),
+                      batch_size = 32,
+                      epochs = 20,
+                      validation_split = 0
+                    )
+
+plot(hist)
+                    
+pred.probability <- predict(model, as.matrix(data.training %>% select(-response, -public_date, -permno)))
+#illustrate.metrics(tibble(s), data.training$response, pred.probability[,2])
+keras.metrics <- illustrate.metrics(tibble(test = "test"), data.training$response, pred.probability[,1])
+
+pred.test.probability <- predict(model, as.matrix(data.test %>% select(-response, -public_date, -permno)))
+#predict(keras::unserialize_model(model), as.matrix(data.test %>% select(-response, -public_date, -permno)))
+
+illustrate.metrics(tibble(test="test"), data.test$response, pred.test.probability[,1])
+
+rbind(compute.metrics(data.test$response, pred.test.probability >= keras.metrics$cutpoint.roc),
+      compute.metrics(data.test$response, pred.test.probability >= keras.metrics$cutpoint.mccf1)) %>%
+  cbind(splitting = c("ROC", "MCCF1"), .) 
+```

@@ -1,0 +1,689 @@
+## Exploratory Data Analysis
+
+Helper functions to truncate data
+```{r functions.eda}
+#' winsorizes/truncates values for a given vector and quantile ranges
+#'
+#' @param vector vector with numerical values
+#' @param lower_quantile_boundary lower quantile boundary
+#' @param upper_quantile_boundary upper quantile boundary
+#'
+#' @return winsorized vector with min(vector) = lower_quantile and
+#'         max(vector) = upper_quantile
+winsorize <- function(vector, lower_quantile_boundary = 0.05,
+                      upper_quantile_boundary = 0.95) {
+  if (lower_quantile_boundary > upper_quantile_boundary) {
+    warning("Lower quantile boundary is greater than upper quantile boundary.")
+  }
+
+  lower_quantile <- quantile(vector, lower_quantile_boundary, na.rm = TRUE)
+  upper_quantile <- quantile(vector, upper_quantile_boundary, na.rm = TRUE)
+
+  vector[!is.na(vector) & vector < lower_quantile] <- lower_quantile
+  vector[!is.na(vector) & vector > upper_quantile] <- upper_quantile
+
+  return(vector)
+}
+
+#' winsorizes/truncate columns of a given tibble
+#'
+#' @param data tibble with data
+#' @param feature_identifier vector with strings of column names of tibble
+#'        which should be winsorized
+#' @param lower_quantile_boundary lower quantile boundary
+#' @param upper_quantile_boundary upper quantile boundary
+#'
+#' @return tibble of the same structure as given with winsorized columns
+data.prepare.winsorize <- function(data, feature_identifier,
+                                   lower_quantile_boundary = 0.05,
+                                   upper_quantile_boundary = 0.95) {
+  data <- data %>%
+    ungroup() %>%
+    mutate(across(all_of(feature_identifier),
+      .fns = ~ winsorize(.x, lower_quantile_boundary, upper_quantile_boundary)
+    ))
+  return(data)
+}
+```
+
+### Overview over deslisting dates
+```{r, number_years_until_delisting}
+# histogram with number of years until delisting
+com %>%
+  group_by(permno) %>%
+  summarize(max_years_to_delisting = max(years_to_delisting)) %>%
+  ggplot(aes(x = max_years_to_delisting)) +
+  geom_histogram(binwidth = 1) +
+  xlim(c(0, ceiling(NUMBER_YEARS_AVAILABLE))) +
+  labs(
+    title = "Number of years until delisting",
+    x = "number of years until delisting",
+    y = "number of companies"
+  )
+```
+
+The histogram displays the number of years until delisting for each data row of the delisted companies in the period from 1970 to 2022.
+
+This chunk creates a plot that displays the number of listed and delisted companies over time and compares them to changes in four macroeconomic ratios.
+```{r, number_of_delisting_subsequent_year}
+# Function to scale secondary axis
+scale_function <- function(x, scale, shift) {
+  return(x * scale + shift)
+}
+
+# Function to scale secondary variable values
+inv_scale_function <- function(x, scale, shift) {
+  return((x + shift) / scale)
+}
+
+# number of delistings in subsequent year
+com.listed_years <- com %>%
+  filter(month(public_date) == 6) %>%
+  group_by(year = floor_date(public_date, "year")) %>%
+  summarize(number_of_listed_companies = n())
+
+# number of delistings in subsequent year
+com.delisting_years <- com %>%
+  filter(event_group == "delisted") %>%
+  group_by(permno) %>%
+  filter(row_number() == 1) %>%
+  ungroup() %>%
+  group_by(year = floor_date(enddat, "year")) %>%
+  summarize(number_of_delistings = n())
+
+com.delisting_years <- com.delisting_years %>%
+  left_join(com.listed_years, by = join_by(year)) %>%
+  mutate(rel_delisting_frequency = number_of_delistings / number_of_listed_companies)
+
+subtitle <- glue(
+  '<span style = "color:{colors["gray"]}">**Number of listed companies**</span>, ',
+  '<span style = "color:{colors["blue"]}">**absolute delisting frequency**</span> and <br>',
+  '<span style = "color:{colors["orange"]}">**relative delisting frequency** (proportion of delisted companies)</span>'
+)
+
+min_y_first <- min(com.delisting_years$number_of_delistings)
+max_y_first <- max(com.delisting_years$number_of_delistings)
+min_y_second <- min(com.delisting_years$rel_delisting_frequency)
+max_y_second <- max(com.delisting_years$rel_delisting_frequency)
+# scale and shift variables calculated based on desired mins and maxes
+scale <- (max_y_second - min_y_second) / (max_y_first - min_y_first)
+shift <- 0
+
+scale1 <- (max(com.delisting_years$number_of_listed_companies) - min(com.delisting_years$number_of_listed_companies)) / (max_y_first - min_y_first)
+shift1 <- 0
+
+plot_stock_listings_delistings <- ggplot(data = com.delisting_years, mapping = aes(x = year)) +
+  annotate(geom = "rect", xmin = ymd("1985-01-01"), xmax = ymd("1987-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  annotate(geom = "rect", xmin = ymd("2000-01-01"), xmax = ymd("2002-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  annotate(geom = "rect", xmin = ymd("2008-01-01"), xmax = ymd("2010-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  annotate(geom = "rect", xmin = ymd("1990-01-01"), xmax = ymd("1992-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  geom_line(
+    mapping = aes(y = inv_scale_function(number_of_listed_companies, scale1, shift1), color = "number of listings"),
+    linetype = "dotted", linewidth = 1
+  ) +
+  annotate(
+    geom = "text", x = max(com.delisting_years$year),
+    y = inv_scale_function(max(com.delisting_years$number_of_listed_companies), scale1, shift1),
+    label = max(com.delisting_years$number_of_listed_companies), hjust = 1.2
+  ) +
+  annotate(
+    geom = "text", x = min(com.delisting_years$year),
+    y = inv_scale_function(min(com.delisting_years$number_of_listed_companies), scale1, shift1),
+    label = min(com.delisting_years$number_of_listed_companies), hjust = 1.2
+  ) +
+  geom_line(
+    mapping = aes(y = inv_scale_function(rel_delisting_frequency, scale, shift), color = "relative delisting frequncy"),
+    linetype = "longdash", linewidth = 1
+  ) +
+  geom_line(
+    mapping = aes(y = number_of_delistings, color = "Absolute delisting frequency"),
+    linetype = "solid", linewidth = 1
+  ) +
+  scale_color_manual(values = c(
+    "number of listings" = as.character(colors["gray"]),
+    "Absolute delisting frequency" = as.character(colors["blue"]),
+    "relative delisting frequncy" = as.character(colors["orange"])
+  )) +
+  scale_y_continuous(
+    "Abslolute delisting frequency",
+    sec.axis = sec_axis(~ scale_function(., scale, shift), name = "Relative delisting frequency", labels = waiver())
+  ) +
+  labs(
+    title = "Delistings vs. calendar year",
+    subtitle = subtitle,
+    x = "calendar year",
+  ) +
+  theme(
+    plot.subtitle = element_markdown(),
+    axis.title.y = element_markdown(color = colors["blue"]),
+    axis.title.y.right = element_markdown(color = colors["orange"]),
+    legend.position = "none"
+  )
+
+plot_macro_ratios <- ggplot(
+  data = macro.ratios %>%
+    pivot_longer(
+      cols = -observation_date,
+      names_to = "index_chg",
+      values_to = "value"
+    ),
+  aes(x = observation_date, y = value)
+) +
+  annotate(geom = "rect", xmin = ymd("1985-01-01"), xmax = ymd("1987-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  annotate(geom = "rect", xmin = ymd("2000-01-01"), xmax = ymd("2002-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  annotate(geom = "rect", xmin = ymd("2008-01-01"), xmax = ymd("2010-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  annotate(geom = "rect", xmin = ymd("1990-01-01"), xmax = ymd("1992-01-01"), ymin = -Inf, ymax = Inf, fill = colors["green"], alpha = 0.2) +
+  geom_line(linewidth = 1) +
+  facet_wrap(. ~ index_chg, scales = "free_y", labeller = labeller(index_chg = macro.ratios.name)) +
+  labs(
+    title = "Macro economic index changes",
+    x = "calendar year",
+    y = "one-year change of index"
+  )
+
+ggarrange(plot_stock_listings_delistings, plot_macro_ratios,
+          ncol = 2, nrow = 1)
+```
+
+```{r, eval=FALSE, include=FALSE}
+com.time_to_delisting <- com %>%
+  filter(event_group == "delisted") %>%
+  group_by(permno) %>%
+  summarize(
+    n_quarters_to_delist = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(prob = 4 / n_quarters_to_delist)
+
+ggplot() +
+  geom_boxplot(com.time_to_delisting, mapping = aes(y = prob)) +
+  labs(
+    title = ,
+    subtitle = "relative frequency of quarters"
+  )
+```
+```{r, months_of_delisting}
+# months of delisting
+com %>%
+  # filter only last quarter before delisting
+  filter(years_to_delisting <= 0.25 & event_group != "active") %>%
+  group_by(permno, enddat) %>%
+  mutate(delisting_month = lubridate::month(enddat, label = TRUE)) %>%
+  ggplot(aes(x = delisting_month)) +
+  geom_bar() +
+  labs(
+    title = "Number of delistings",
+    x = "month",
+    y = "Frequency"
+  )
+```
+
+Systematic seasonality of delistings is not observable.
+
+### Correlation analysis
+```{r, correlation_analysis}
+correlation.info <- function(data, feature_identifier) {
+  correlation.matrix <- data %>%
+    select(all_of(feature_identifier)) %>%
+    cor(x = , use = "pairwise.complete.obs", method = "pearson") %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "rowname")
+
+  correlation.plot <- correlation.matrix %>%
+    pivot_longer(
+      cols = -rowname,
+      names_to = "rowname1",
+      values_to = "correlation"
+    ) %>%
+    ggplot(aes(rowname, rowname1, fill = correlation)) +
+    geom_tile() +
+    scale_fill_gradient2(
+      low = "blue", high = "red", mid = "white",
+      midpoint = 0, space = "Lab",
+      name = "Pearson\nCorrelation"
+    ) +
+    labs(
+      title = "Correlation Matrix",
+      x = "",
+      y = ""
+    ) +
+    theme(
+      aspect.ratio = 1,
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+    )
+
+  return(list(matrix = correlation.matrix, plot = correlation.plot))
+}
+
+correlation.info.initial <- correlation.info(com, com.features.fin$identifier)
+correlation.info.initial$plot
+```
+
+The majority of features is not correlated with a Pearson's correlation coefficient of around 0. The operative profit
+margin ratios `opmad` and `opmbd` as well as the liquidity ratios `curr_ratio` and `quick_ratio` are perfectly positively correlated. The correlation coefficient between the debt ratios `debt_assets` and `debt_at` is 0.76. The remaining correlation coefficients are all lower than 0.75.  Therefore, the next chunk searches all pairwise correlations and removes one of the pairs if its absolute value is higher than the `CORRELATION_THRESHOLD`.
+
+```{r correlated_features_detect_removals}
+# winsorize features
+com.winsorized <- data.prepare.winsorize(com, com.features.fin$identifier,
+  lower_quantile_boundary = 0.05,
+  upper_quantile_boundary = 0.95
+)
+
+n_features <- length(com.features.fin$identifier)
+feature_indicators_to_remove <- character(0)
+# check features mutually if they meet CORRELATION_THRESHOLD and remove one of them
+for (i in 1:(n_features - 1)) {
+  feature_identifier_i <- com.features.fin$identifier[i]
+  for (j in (i + 1):n_features) {
+    feature_identifier_j <- com.features.fin$identifier[j]
+    if (abs(correlation.info.initial$matrix[i, j + 1]) >= CORRELATION_THRESHOLD) {
+      # scatter plot of correlated features > truncation tbd
+      print(ggplot(com.winsorized, aes_string(x = feature_identifier_i, y = feature_identifier_j)) +
+        geom_point() +
+        geom_smooth() +
+        labs(title = paste("Scatterplot of", feature_identifier_i, "vs", feature_identifier_j)))
+
+      print(paste0(
+        "Correlation between features ", feature_identifier_i,
+        " and ", feature_identifier_j, " is ",
+        formatC(correlation.info.initial$matrix[i, j + 1], digits = 4),
+        ". Therefore, feature ", feature_identifier_j, " will be removed in further analyses."
+      ))
+
+      feature_indicators_to_remove <- c(feature_indicators_to_remove, feature_identifier_j)
+    }
+  }
+}
+```
+The two scatterplots of the highly correlated (winsorized) features `opmad` and `opmbd` as well as `curr_ratio` and `quick_ratio` confirm linear relationship between them. The scatterplot between `debt_assets` and `debt_at` shows non-linear structures for higher values.
+
+### Summary statistics for features
+```{r, features_summary_statistics}
+com.summary <- com %>%
+  pivot_longer(
+    cols = com.features.fin$identifier,
+    names_to = "feature",
+    values_to = "value"
+  ) %>%
+  group_by(feature) %>%
+  summarize(
+    min = min(value, na.rm = TRUE),
+    quantile1 = quantile(value, 0.01, na.rm = TRUE),
+    quantile25 = quantile(value, 0.25, na.rm = TRUE),
+    median = median(value, na.rm = TRUE),
+    mean = mean(value, na.rm = TRUE),
+    quantile75 = quantile(value, 0.75, na.rm = TRUE),
+    quantile99 = quantile(value, 0.99, na.rm = TRUE),
+    max = max(value, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+pander(com.summary)
+```
+
+```{r, features_qqplot}
+# qq-plots for features
+com %>%
+  pivot_longer(
+    cols = com.features.fin$identifier,
+    names_to = "feature",
+    values_to = "value"
+  ) %>%
+  ggplot(aes(y = value)) +
+  geom_boxplot() +
+  facet_wrap(~feature, scales = "free")
+```
+
+The summary table and boxplots show that the features $\texttt{inv_turn}$, $\texttt{opmad}$, $\texttt{opmbd}$ and $\texttt{rect_turn}$ and $\texttt{roe}$ contain extremely large values in absolute values.
+```{r, features_extreme_outlier_analysis, include=FALSE}
+# outliers in feature inv_turn
+com %>%
+  select(permno, public_date, hcomnam, inv_turn) %>%
+  filter(inv_turn > 10^5)
+# BENGAL OIL & GAS CORP
+# LINEAGE CELL THERAPEUTICS INC (https://investor.lineagecell.com/node/11026/html, consolidated balance sheet, no date for inventory given)
+# TWENTY FIRST CENTURY ENVELOPE
+
+# outliers in features opmad or opmdb
+com %>%
+  select(permno, public_date, hcomnam, opmad, opmbd) %>%
+  filter(opmad < -10^5 | opmbd < -10^5)
+# ANNANDALE CORP
+# NIKOLA CORP	(https://www.nikolamotor.com/wp-content/uploads/2022/12/2021_Annual_Report.pdf, loss and no revenue (-), page 95)
+# INFINITY PHARMACEUTICALS INC	(https://www.annualreports.com/HostedData/AnnualReportArchive/i/NASDAQ_INFI_2013.pdf, loss in sales and no revenue, page
+# comprehensive loss: 126,758)
+
+# outliers in feature rect_turn
+com %>%
+  select(permno, public_date, hcomnam, rect_turn) %>%
+  filter(rect_turn > 10^5)
+# JASON INDUSTRIES INC (high value not verifiable)
+# QUANTUM GROUP INC (???)
+
+# outliers in feature roe
+com %>%
+  select(permno, public_date, hcomnam, roe) %>%
+  filter(roe > 10^5)
+# AUTOSPA AUTOMALLS INC -> no data found
+# MERCURY ENTERTAINMENT CORP -> no data found
+```
+<!-- **BENGAL OIL & GAS CORP (1982)**: No financial data for 1982 found on the internet
+- **LINEAGE CELL THERAPEUTICS INC (2017)**: Cost of Goods Sold = ; Average Inventories (of most recent two years) = -->
+
+### Features and delisting frequency
+The following histograms show for each feature in the data set the number of data rows that fall in a specific range in gray (x-axis). The blue bars represent the number of financial ratio rows in a specific range that belong to a company which delisted in the subsequent year (gap of three month included). For example, if a company was delisted in April 2002, then the financial ratios from January 2001 to January 2002 would be attributed to the blue bar. The ratio between the blue and gray bar, named relative delisting frequency, is displayed by the orange points and a corresponding smoothed line (method `LOESS` with tri-cubic kernel). The right y-axis is the scale for the relative frequency values. The feature values are winsorized at the 5% and 95% quantile.
+```{r, features_distribution_delisting_frequency.function}
+#' creates a histogram of features vs delisting frequency
+#'
+#' @param data tibble containing financial ratios for companies with a column
+#'             named feature_identifier and years_to_delisting
+#' @param feature_identifier technical identifier of feature of interest
+#' @param feature_description readable name of feature for title
+#' @param marginal.data vector of predicted delistings
+#' @param marginal.legend legend for marginal plots
+#'
+#' @return histogram of fincancial ratio features with up to two smoothed
+#'         relative delisting frequencies
+hist_delisting_frequency <- function(
+    data,
+    feature_identifier,
+    feature_description,
+    marginal.data = NULL, marginal.legend = "Modeled delisting frequency",
+    marginal.data2 = NULL, marginal.legend2 = "") {
+  feature <- data[[feature_identifier]] # first column
+  years_to_delisting <- data$years_to_delisting # first column
+  max_x <- max(feature, na.rm = TRUE)
+  min_x <- min(feature, na.rm = TRUE)
+  n_bins <- 30
+  bin_boundaries <- seq(min_x, max_x, length.out = n_bins + 1)
+  bin_width <- bin_boundaries[2] - bin_boundaries[1]
+
+  plot.data <- tibble(
+    feature = feature,
+    years_to_delisting = years_to_delisting,
+    feature_bin_index = findInterval(feature, bin_boundaries),
+    bin_centers = bin_boundaries[1] + bin_width * (feature_bin_index - 1.5)
+  )
+
+  # compute points
+  if (!is.null(marginal.data)) {
+    marginal.data <- plot.data %>%
+      mutate(pred = marginal.data) %>%
+      group_by(bin_centers) %>%
+      summarize(relative_frequency_delisting_pred = mean(pred)) %>%
+      select(x = bin_centers, yhat = relative_frequency_delisting_pred)
+  }
+
+  # compute points
+  if (!is.null(marginal.data2)) {
+    marginal.data2 <- plot.data %>%
+      mutate(pred = marginal.data2) %>%
+      group_by(bin_centers) %>%
+      summarize(relative_frequency_delisting_pred = mean(pred)) %>%
+      select(x = bin_centers, yhat = relative_frequency_delisting_pred)
+  }
+
+  # max of first y axis
+  max_y_first <- plot.data %>%
+    group_by(feature_bin_index) %>%
+    summarize(frequency = n()) %>%
+    select(frequency) %>%
+    max()
+  max_y_second <- 0.3 # max of second y axis
+  min_y_first <- 0 # min of first y axis
+  min_y_second <- 0 # min of second y axis
+
+  # scale and shift variables calculated based on desired mins and maxes
+  scale <- (max_y_second - min_y_second) / (max_y_first - min_y_first)
+  shift <- min_y_first - min_y_second
+
+  com.frequency_delisting <- plot.data %>%
+    mutate(delisting_indicator = determine_delisting_property(years_to_delisting)) %>%
+    group_by(bin_centers) %>%
+    summarize(
+      frequency = n(),
+      frequency_delisting = sum(delisting_indicator)
+    ) %>%
+    mutate(relative_frequency_delisting = frequency_delisting / frequency)
+
+  plot <- ggplot(plot.data) +
+    geom_histogram(
+      aes(x = feature, color = "Absolute frequency", fill = "Absolute frequency"),
+      binwidth = bin_width
+    ) +
+    geom_histogram(
+      aes(
+        x = feature * ifelse(determine_delisting_property(years_to_delisting), 1, NA),
+        color = "Absolute delisting frequency", fill = "Absolute delisting frequency"
+      ),
+      binwidth = bin_width
+    ) +
+    geom_point(
+      data = com.frequency_delisting,
+      mapping = aes(
+        x = bin_centers, y = inv_scale_function(relative_frequency_delisting, scale, shift),
+        color = "Relative delisting frequency"
+      )
+    )
+
+  if (feature_identifier == "pe_exi") {
+    plot <- plot + geom_smooth(
+      data = com.frequency_delisting %>% filter(bin_centers <= 0),
+      method = "loess",
+      mapping = aes(
+        x = bin_centers, y = inv_scale_function(relative_frequency_delisting, scale, shift),
+        color = "Relative delisting frequency"
+      )
+    ) +
+      geom_smooth(
+        data = com.frequency_delisting %>% filter(bin_centers > 0),
+        mapping = aes(
+          x = bin_centers, y = inv_scale_function(relative_frequency_delisting, scale, shift),
+          color = "Relative delisting frequency"
+        )
+      )
+    if (!is.null(marginal.data)) {
+      plot <- plot + geom_point(
+        data = marginal.data %>% filter(x <= 0),
+        mapping = aes(
+          x = x, y = inv_scale_function(yhat, scale, shift),
+          color = marginal.legend
+        )
+      ) +
+        geom_smooth(
+          data = marginal.data %>% filter(x <= 0),
+          se = FALSE,
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend
+          ), linetype = "dashed"
+        ) +
+        geom_point(
+          data = marginal.data %>% filter(x > 0),
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend
+          )
+        ) +
+        geom_smooth(
+          data = marginal.data %>% filter(x > 0),
+          se = FALSE,
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend
+          ), linetype = "dashed"
+        )
+    }
+    if (!is.null(marginal.data2)) {
+      plot <- plot + geom_point(
+        data = marginal.data2 %>% filter(x <= 0),
+        mapping = aes(
+          x = x, y = inv_scale_function(yhat, scale, shift),
+          color = marginal.legend2
+        )
+      ) +
+        geom_smooth(
+          data = marginal.data2 %>% filter(x <= 0),
+          se = FALSE,
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend2
+          ), linetype = "dotted"
+        ) +
+        geom_point(
+          data = marginal.data2 %>% filter(x > 0),
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend2
+          )
+        ) +
+        geom_smooth(
+          data = marginal.data2 %>% filter(x > 0),
+          se = FALSE,
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend2
+          ), linetype = "dotted"
+        )
+    }
+  } else {
+    plot <- plot + geom_smooth(
+      data = com.frequency_delisting,
+      mapping = aes(
+        x = bin_centers, y = inv_scale_function(relative_frequency_delisting, scale, shift),
+        color = "Relative delisting frequency"
+      )
+    )
+
+    if (!is.null(marginal.data)) {
+      plot <- plot + geom_point(
+        data = marginal.data,
+        mapping = aes(
+          x = x, y = inv_scale_function(yhat, scale, shift),
+          color = marginal.legend
+        )
+      ) +
+        geom_smooth(
+          data = marginal.data,
+          se = FALSE,
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend
+          ), linetype = "dashed"
+        )
+    }
+    if (!is.null(marginal.data2)) {
+      plot <- plot + geom_point(
+        data = marginal.data2,
+        mapping = aes(
+          x = x, y = inv_scale_function(yhat, scale, shift),
+          color = marginal.legend2
+        )
+      ) +
+        geom_smooth(
+          data = marginal.data2,
+          se = FALSE,
+          mapping = aes(
+            x = x, y = inv_scale_function(yhat, scale, shift),
+            color = marginal.legend2
+          ), linetype = "dotted"
+        )
+    }
+  }
+
+  subtitle <- glue(
+    '<span style="color:{colors["gray"]}">**Absolute frequency (active and delisted)**</span>, ',
+    '<span style="color:{colors["blue"]}">**Absolute delisting frequency**</span>, <br>',
+    '<span style="color:{colors["orange"]}">**Relative delisting frequency**</span>',
+    ifelse(marginal.legend == "", "", paste0(', <span style="color:{colors["magenta"]}">**', marginal.legend, "**</span>")),
+    ifelse(marginal.legend2 == "", "", paste0(',<br><span style="color:{colors["lightblue"]}">**', marginal.legend2, "**</span>"))
+  )
+
+  plot <- plot + scale_y_continuous(
+    name = "Frequency",
+    limits = c(min_y_first, max_y_first),
+    sec.axis = sec_axis(~ scale_function(., scale, shift),
+      name = "Relative delisting frequency"
+    ),
+    oob = scales::rescale_none
+  ) +
+  scale_color_manual(
+    breaks = c(
+      "Absolute frequency", "Absolute delisting frequency",
+      "Relative delisting frequency", marginal.legend, marginal.legend2
+    ),
+    values = c(
+      as.character(colors["gray"]),
+      as.character(colors["blue"]),
+      as.character(colors["orange"]),
+      as.character(colors["magenta"]),
+      as.character(colors["lightblue"])
+    )
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Absolute frequency" = as.character(colors["gray"]),
+      "Absolute delisting frequency" = as.character(colors["blue"]),
+      "Relative delisting frequency" = as.character(colors["orange"]),
+      as.character(colors["magenta"]),
+      as.character(colors["lightblue"])
+    )
+  ) +
+  labs(
+    title = paste0("Histogram of ", feature_description),
+    subtitle = subtitle,
+    x = feature_identifier
+  ) +
+  theme(
+    plot.subtitle = element_markdown(),
+    axis.title.y = element_markdown(color = colors["gray"]),
+    axis.title.y.right = element_markdown(color = colors["orange"]),
+    legend.position = "none"
+  ) +
+  geom_text(
+    aes(
+      x = max_x, y = max_y_first,
+      label = "outliers are winsorized"
+    ),
+    stat = "unique",
+    hjust = 1,
+    size = 3
+  )
+
+  return(plot)
+}
+
+# winsorize features
+com.winsorized <- data.prepare.winsorize(com, com.features.fin$identifier,
+  lower_quantile_boundary = 0.05,
+  upper_quantile_boundary = 0.95
+)
+
+# plot histogram of features and delisting frequency
+plots <- list()
+for (i in 1:length(com.features.fin$identifier)) {
+  feature_description <- com.features.fin[[i, 1]]
+  feature_identifier <- com.features.fin[[i, 2]]
+
+  plots[[feature_identifier]] <- hist_delisting_frequency(
+    com.winsorized %>% select(all_of(feature_identifier), years_to_delisting),
+    feature_identifier,
+    feature_description
+  )
+  print(plots[[feature_identifier]])
+}
+```
+
+* Capitalization and Solvency ratios - **capital_ratio, de_ratio, debt_assets, debt_at**: The higher the ratio of debt to assets or liabilities, the higher the relative delisting frequency in the subsequent year.
+
+* Efficiency - **at_turn, inv_turn, rect_turn, pay_turn**: These efficiency ratios but *pay_turn* seem to have no observable marginal effect on delisting. However, if the ratio between cost of goods sold plus the change in inventories and accounts payable gets larger, the observed delisting frequency for the subsequent year decreases.
+
+* Liquidity - **cash_ratio, curr_ratio, quick_ratio**: The ratio between cash plus short-term investments (*cash_ratio*) seems to have no marginal predictive power for delisting. However, if the ratioto current liabilities (*curr_ratio*, *quick_ratio*) increases, the relative frequency of delistings in the subsequent year decreases
+
+* Profitability - **aftret_eq, aftret_equity, gpm, opmad, opmbd, roa, roe**: If these profitability ratios are negative, the observed relative frequency for delisting in the subsequent year is relatively high compared to the cases in which the ratios are positive. The denominators of these profitability ratios contain assets or sales key figures which are greater than or equal to zero. So if the income or sales key figures in the numerator of the ratios are negative, the company's situation is on average more problematic with respect to delisting.
+
+* Valuation - **pe_exi**: For positive price-to-earnings ratios (per share) the observed delisting frequency in the subsequent year becomes smaller for increasing ratios. The higher the price-to-earnings ratio, the better is a share valued. If the price-to-earnings ratio is negative, then the earnings in the denominator of the ratio are negative. If the loss per share is relatively small, then the price-to-earnings ratio is ≪ −1. Hence, decreasing ratios are associated with a lower relative delisting frequency.
+
+```{r, features_distribution_delisting_frequency.plot}
+(plots[["capital_ratio"]] | plots[["curr_ratio"]]) / (plots[["roe"]] | plots[["pe_exi"]])
+```
