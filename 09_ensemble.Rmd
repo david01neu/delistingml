@@ -107,9 +107,9 @@ for (i in 1:length(ensemble_variants)) {
                summaryFunction = compute.summary
                ),
               )
-  #ensemble$ens_model$bestTune
-  #coef(ensemble$ens_model$finalModel, ensemble$ens_model$bestTune$lambda)
+
   print(summary(ensemble$ens_model$finalModel))
+  print(confint(ensemble$ens_model$finalModel))
   
   model_preds <- lapply(model_list, predict, newdata=data.training, type="prob")
   model_preds <- lapply(model_preds, function(x) x[, "delisted"])
@@ -122,8 +122,8 @@ for (i in 1:length(ensemble_variants)) {
   
   pred.test <- 1-predict(ensemble, newdata = data.test, type="prob")
   
-  model_identifiers <- c("ensemble", "gbm", "glmnet", "keras", "kernlab", "randomForestSRC")
-  model_labels <- c("Ensemble", "Gradient boosting", "Logistic regression", "Neural net", "SVM", "Random Forest")
+  model_identifiers <- c("ensemble", "randomForestSRC", "gbm", "keras", "kernlab", "glmnet")
+  model_labels <- c("Ensemble", "Random Forest", "Gradient boosting", "Neural net", "SVM", "Logistic regression")
 
   if (i <= 1) { # MCCF1 threshold
     ensemble.cutpoint.mccf1 <- compute.mccf1cutpoint(model_preds$ensemble, data.training$response)$best_cutpoint
@@ -184,6 +184,6 @@ ensemble.summary.test <- ensemble.summary.test %>%
   cbind(splitting = c("ROC", "MCCF1"), .) 
 pander(ensemble.summary.test, caption = "Ensemble on test data")
 
-ggarrange(plot.roc, plot.mccf1, nrow = 1,ncol = 2,
+ggarrange(plot.roc, plot.mccf1, nrow = 1, ncol = 2,
           legend = "bottom", common.legend = TRUE)
 ```

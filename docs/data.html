@@ -754,7 +754,7 @@ data frame.</p>
 <span id="cb10-77"><a href="data.html#cb10-77" tabindex="-1"></a>    <span class="st">&quot;relative delisting frequncy&quot;</span> <span class="ot">=</span> <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>])</span>
 <span id="cb10-78"><a href="data.html#cb10-78" tabindex="-1"></a>  )) <span class="sc">+</span></span>
 <span id="cb10-79"><a href="data.html#cb10-79" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb10-80"><a href="data.html#cb10-80" tabindex="-1"></a>    <span class="st">&quot;Abslolute delisting frequency&quot;</span>,</span>
+<span id="cb10-80"><a href="data.html#cb10-80" tabindex="-1"></a>    <span class="st">&quot;Absolute delisting frequency&quot;</span>,</span>
 <span id="cb10-81"><a href="data.html#cb10-81" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">sec_axis</span>(<span class="sc">~</span> <span class="fu">scale_function</span>(., scale, shift), <span class="at">name =</span> <span class="st">&quot;Relative delisting frequency&quot;</span>, <span class="at">labels =</span> <span class="fu">waiver</span>())</span>
 <span id="cb10-82"><a href="data.html#cb10-82" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb10-83"><a href="data.html#cb10-83" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
@@ -1634,7 +1634,7 @@ margin ratios <code>opmad</code> and <code>opmbd</code> as well as the liquidity
 <span id="cb24-52"><a href="data.html#cb24-52" tabindex="-1"></a>    data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(com_slope, <span class="at">by =</span> <span class="fu">join_by</span>(permno))</span>
 <span id="cb24-53"><a href="data.html#cb24-53" tabindex="-1"></a>  }</span>
 <span id="cb24-54"><a href="data.html#cb24-54" tabindex="-1"></a></span>
-<span id="cb24-55"><a href="data.html#cb24-55" tabindex="-1"></a>  <span class="fu">return</span>(data <span class="sc">%&gt;%</span> <span class="fu">replace</span>(<span class="fu">is.na</span>(.), <span class="dv">0</span>)) <span class="co"># !!!!!!!!!!!!!!!!!!!!</span></span>
+<span id="cb24-55"><a href="data.html#cb24-55" tabindex="-1"></a>  <span class="fu">return</span>(data)<span class="co"># %&gt;% replace(is.na(.), 0))</span></span>
 <span id="cb24-56"><a href="data.html#cb24-56" tabindex="-1"></a>}</span>
 <span id="cb24-57"><a href="data.html#cb24-57" tabindex="-1"></a></span>
 <span id="cb24-58"><a href="data.html#cb24-58" tabindex="-1"></a><span class="co">#&#39; prepares company data for model training and testing purposes</span></span>
@@ -1826,9 +1826,15 @@ margin ratios <code>opmad</code> and <code>opmbd</code> as well as the liquidity
 <span id="cb32-12"><a href="data.html#cb32-12" tabindex="-1"></a><span class="co"># ggplot(data = data.sample.history, aes(public_date, capital_ratio)) +</span></span>
 <span id="cb32-13"><a href="data.html#cb32-13" tabindex="-1"></a><span class="co">#   geom_point() +</span></span>
 <span id="cb32-14"><a href="data.html#cb32-14" tabindex="-1"></a><span class="co">#   geom_abline(slope = data.sample.history.lm$coefficients[2],</span></span>
-<span id="cb32-15"><a href="data.html#cb32-15" tabindex="-1"></a><span class="co">#               intercept = data.sample.history.lm$coefficients[1])</span></span>
-<span id="cb32-16"><a href="data.html#cb32-16" tabindex="-1"></a></span>
-<span id="cb32-17"><a href="data.html#cb32-17" tabindex="-1"></a><span class="fu">expect_true</span>(data.sample<span class="sc">$</span>capital_ratio_h <span class="sc">==</span> data.sample.history.lm<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span></code></pre></div>
+<span id="cb32-15"><a href="data.html#cb32-15" tabindex="-1"></a><span class="co">#               intercept = data.sample.history.lm$coefficients[1]) +</span></span>
+<span id="cb32-16"><a href="data.html#cb32-16" tabindex="-1"></a><span class="co">#   labs(</span></span>
+<span id="cb32-17"><a href="data.html#cb32-17" tabindex="-1"></a><span class="co">#     title = &quot;Scatterplot: Capital ratio vs. public report date&quot;,</span></span>
+<span id="cb32-18"><a href="data.html#cb32-18" tabindex="-1"></a><span class="co">#     subtitle = &quot;Company with firm_id 81282&quot;,</span></span>
+<span id="cb32-19"><a href="data.html#cb32-19" tabindex="-1"></a><span class="co">#     x = &quot;public report date&quot;,</span></span>
+<span id="cb32-20"><a href="data.html#cb32-20" tabindex="-1"></a><span class="co">#     y = &quot;captial ratio&quot;</span></span>
+<span id="cb32-21"><a href="data.html#cb32-21" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb32-22"><a href="data.html#cb32-22" tabindex="-1"></a></span>
+<span id="cb32-23"><a href="data.html#cb32-23" tabindex="-1"></a><span class="fu">expect_true</span>(data.sample<span class="sc">$</span>capital_ratio_h <span class="sc">==</span> data.sample.history.lm<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span></code></pre></div>
 </div>
 </div>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1" tabindex="-1"></a><span class="fu">paste</span>(</span>

@@ -11,7 +11,7 @@ Delisting is the removal of a listed security from a stock exchange. Consequence
 Formatted output including all files available on https://thesis.edv-neuhaeusler.de
 
 | Filename                   | Content and model packages                               |
-| -------------------------- |:--------------------------------------------------------:|
+| -------------------------- | -------------------------------------------------------- |
 | index.Rmd                  | Load initial data and set constants                      |
 | 01_eda.Rmd                 | Exploratory data analysis                                |
 | 02_data_preparation.Rmd    | Create predictior data set for training and testing      |

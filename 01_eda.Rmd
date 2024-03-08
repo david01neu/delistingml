@@ -145,7 +145,7 @@ plot_stock_listings_delistings <- ggplot(data = com.delisting_years, mapping = a
     "relative delisting frequncy" = as.character(colors["orange"])
   )) +
   scale_y_continuous(
-    "Abslolute delisting frequency",
+    "Absolute delisting frequency",
     sec.axis = sec_axis(~ scale_function(., scale, shift), name = "Relative delisting frequency", labels = waiver())
   ) +
   labs(

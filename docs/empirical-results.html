@@ -1801,7 +1801,7 @@ where <span class="math inline">\(\beta\)</span> is a vector.
 <span id="cb98-22"><a href="empirical-results.html#cb98-22" tabindex="-1"></a></span>
 <span id="cb98-23"><a href="empirical-results.html#cb98-23" tabindex="-1"></a>pred.probability <span class="ot">&lt;-</span> keras.fit <span class="sc">%&gt;%</span> </span>
 <span id="cb98-24"><a href="empirical-results.html#cb98-24" tabindex="-1"></a>   <span class="fu">predict</span>(data.training <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>permno, <span class="sc">-</span>public_date), <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)</span></code></pre></div>
-<pre><code>## 208/208 - 0s - 146ms/epoch - 701us/step</code></pre>
+<pre><code>## 208/208 - 0s - 363ms/epoch - 2ms/step</code></pre>
 <div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="empirical-results.html#cb100-1" tabindex="-1"></a>keras.metrics <span class="ot">&lt;-</span> <span class="fu">illustrate.metrics</span>(hyperparameters.table, data.training<span class="sc">$</span>response, pred.probability<span class="sc">$</span>delisted)</span></code></pre></div>
 <p><img src="_main_files/figure-html/model.neuralnet.best_model-1.png" width="672" /></p>
 <pre><code>## [1] &quot;Classification threshold 0.1862 minimizes distance of ROC curve to (0,1).&quot;</code></pre>
@@ -1826,7 +1826,7 @@ where <span class="math inline">\(\beta\)</span> is a vector.
 <p><strong>Performance evaluation on test set</strong></p>
 <div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="empirical-results.html#cb104-1" tabindex="-1"></a><span class="co"># MCCF1 variant: prediction scores on test data (&quot;active&quot;, &quot;delisted&quot;)</span></span>
 <span id="cb104-2"><a href="empirical-results.html#cb104-2" tabindex="-1"></a>pred.test.probability <span class="ot">&lt;-</span> <span class="fu">predict</span>(keras.fit, <span class="at">newdata =</span> data.test, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)</span></code></pre></div>
-<pre><code>## 70/70 - 0s - 79ms/epoch - 1ms/step</code></pre>
+<pre><code>## 70/70 - 0s - 126ms/epoch - 2ms/step</code></pre>
 <div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="empirical-results.html#cb106-1" tabindex="-1"></a><span class="co"># ROC variant: fit model using best hyperparameters and </span></span>
 <span id="cb106-2"><a href="empirical-results.html#cb106-2" tabindex="-1"></a><span class="co">#              find best threshold and</span></span>
 <span id="cb106-3"><a href="empirical-results.html#cb106-3" tabindex="-1"></a><span class="co">#              prediction scores on test data (&quot;active&quot;, &quot;delisted&quot;)</span></span>
@@ -1855,9 +1855,9 @@ where <span class="math inline">\(\beta\)</span> is a vector.
 <span id="cb106-26"><a href="empirical-results.html#cb106-26" tabindex="-1"></a>keras.metrics.roc.cutpoint <span class="ot">&lt;-</span> <span class="fu">compute.roc</span>(</span>
 <span id="cb106-27"><a href="empirical-results.html#cb106-27" tabindex="-1"></a>  <span class="fu">predict</span>(keras.fit.roc, <span class="at">newdata =</span> data.training, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)<span class="sc">$</span>delisted,</span>
 <span id="cb106-28"><a href="empirical-results.html#cb106-28" tabindex="-1"></a>  data.training<span class="sc">$</span>response)<span class="sc">$</span>best_cutpoint</span></code></pre></div>
-<pre><code>## 208/208 - 0s - 152ms/epoch - 731us/step</code></pre>
+<pre><code>## 208/208 - 0s - 229ms/epoch - 1ms/step</code></pre>
 <div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="empirical-results.html#cb108-1" tabindex="-1"></a>pred.test.probability.roc <span class="ot">&lt;-</span> <span class="fu">predict</span>(keras.fit.roc, <span class="at">newdata =</span> data.test, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>)</span></code></pre></div>
-<pre><code>## 70/70 - 0s - 69ms/epoch - 981us/step</code></pre>
+<pre><code>## 70/70 - 0s - 94ms/epoch - 1ms/step</code></pre>
 <div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="empirical-results.html#cb110-1" tabindex="-1"></a><span class="co"># metrics on test set using best threshold determined based on train data</span></span>
 <span id="cb110-2"><a href="empirical-results.html#cb110-2" tabindex="-1"></a>keras.summary.test <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">compute.metrics</span>(data.test<span class="sc">$</span>response, pred.test.probability.roc<span class="sc">$</span>delisted <span class="sc">&gt;=</span> keras.metrics<span class="sc">$</span>cutpoint.roc),</span>
 <span id="cb110-3"><a href="empirical-results.html#cb110-3" tabindex="-1"></a>      <span class="fu">compute.metrics</span>(data.test<span class="sc">$</span>response, pred.test.probability<span class="sc">$</span>delisted <span class="sc">&gt;=</span> keras.metrics<span class="sc">$</span>cutpoint.mccf1)) <span class="sc">%&gt;%</span></span>
@@ -2219,9 +2219,9 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 <span id="cb122-20"><a href="empirical-results.html#cb122-20" tabindex="-1"></a>               <span class="at">summaryFunction =</span> compute.summary</span>
 <span id="cb122-21"><a href="empirical-results.html#cb122-21" tabindex="-1"></a>               ),</span>
 <span id="cb122-22"><a href="empirical-results.html#cb122-22" tabindex="-1"></a>              )</span>
-<span id="cb122-23"><a href="empirical-results.html#cb122-23" tabindex="-1"></a>  <span class="co">#ensemble$ens_model$bestTune</span></span>
-<span id="cb122-24"><a href="empirical-results.html#cb122-24" tabindex="-1"></a>  <span class="co">#coef(ensemble$ens_model$finalModel, ensemble$ens_model$bestTune$lambda)</span></span>
-<span id="cb122-25"><a href="empirical-results.html#cb122-25" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">summary</span>(ensemble<span class="sc">$</span>ens_model<span class="sc">$</span>finalModel))</span>
+<span id="cb122-23"><a href="empirical-results.html#cb122-23" tabindex="-1"></a></span>
+<span id="cb122-24"><a href="empirical-results.html#cb122-24" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">summary</span>(ensemble<span class="sc">$</span>ens_model<span class="sc">$</span>finalModel))</span>
+<span id="cb122-25"><a href="empirical-results.html#cb122-25" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">confint</span>(ensemble<span class="sc">$</span>ens_model<span class="sc">$</span>finalModel))</span>
 <span id="cb122-26"><a href="empirical-results.html#cb122-26" tabindex="-1"></a>  </span>
 <span id="cb122-27"><a href="empirical-results.html#cb122-27" tabindex="-1"></a>  model_preds <span class="ot">&lt;-</span> <span class="fu">lapply</span>(model_list, predict, <span class="at">newdata=</span>data.training, <span class="at">type=</span><span class="st">&quot;prob&quot;</span>)</span>
 <span id="cb122-28"><a href="empirical-results.html#cb122-28" tabindex="-1"></a>  model_preds <span class="ot">&lt;-</span> <span class="fu">lapply</span>(model_preds, <span class="cf">function</span>(x) x[, <span class="st">&quot;delisted&quot;</span>])</span>
@@ -2234,8 +2234,8 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 <span id="cb122-35"><a href="empirical-results.html#cb122-35" tabindex="-1"></a>  </span>
 <span id="cb122-36"><a href="empirical-results.html#cb122-36" tabindex="-1"></a>  pred.test <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">-</span><span class="fu">predict</span>(ensemble, <span class="at">newdata =</span> data.test, <span class="at">type=</span><span class="st">&quot;prob&quot;</span>)</span>
 <span id="cb122-37"><a href="empirical-results.html#cb122-37" tabindex="-1"></a>  </span>
-<span id="cb122-38"><a href="empirical-results.html#cb122-38" tabindex="-1"></a>  model_identifiers <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ensemble&quot;</span>, <span class="st">&quot;gbm&quot;</span>, <span class="st">&quot;glmnet&quot;</span>, <span class="st">&quot;keras&quot;</span>, <span class="st">&quot;kernlab&quot;</span>, <span class="st">&quot;randomForestSRC&quot;</span>)</span>
-<span id="cb122-39"><a href="empirical-results.html#cb122-39" tabindex="-1"></a>  model_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Ensemble&quot;</span>, <span class="st">&quot;Gradient boosting&quot;</span>, <span class="st">&quot;Logistic regression&quot;</span>, <span class="st">&quot;Neural net&quot;</span>, <span class="st">&quot;SVM&quot;</span>, <span class="st">&quot;Random Forest&quot;</span>)</span>
+<span id="cb122-38"><a href="empirical-results.html#cb122-38" tabindex="-1"></a>  model_identifiers <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ensemble&quot;</span>, <span class="st">&quot;randomForestSRC&quot;</span>, <span class="st">&quot;gbm&quot;</span>, <span class="st">&quot;keras&quot;</span>, <span class="st">&quot;kernlab&quot;</span>, <span class="st">&quot;glmnet&quot;</span>)</span>
+<span id="cb122-39"><a href="empirical-results.html#cb122-39" tabindex="-1"></a>  model_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Ensemble&quot;</span>, <span class="st">&quot;Random Forest&quot;</span>, <span class="st">&quot;Gradient boosting&quot;</span>, <span class="st">&quot;Neural net&quot;</span>, <span class="st">&quot;SVM&quot;</span>, <span class="st">&quot;Logistic regression&quot;</span>)</span>
 <span id="cb122-40"><a href="empirical-results.html#cb122-40" tabindex="-1"></a></span>
 <span id="cb122-41"><a href="empirical-results.html#cb122-41" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">&lt;=</span> <span class="dv">1</span>) { <span class="co"># MCCF1 threshold</span></span>
 <span id="cb122-42"><a href="empirical-results.html#cb122-42" tabindex="-1"></a>    ensemble.cutpoint.mccf1 <span class="ot">&lt;-</span> <span class="fu">compute.mccf1cutpoint</span>(model_preds<span class="sc">$</span>ensemble, data.training<span class="sc">$</span>response)<span class="sc">$</span>best_cutpoint</span>
@@ -2317,8 +2317,15 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 ## 
 ## Number of Fisher Scoring iterations: 5
 ## 
-## 208/208 - 0s - 153ms/epoch - 734us/step
-## 208/208 - 0s - 208ms/epoch - 998us/step
+##                  2.5 %     97.5 %
+## (Intercept)  2.2464980  3.2097172
+## rfr         -6.8120815 -4.3999826
+## lr           0.8529504  2.6495669
+## svm         -0.4078428  0.6633009
+## keras       -0.3628714  0.3135745
+## boosting    -2.9813809 -0.8061725
+## 208/208 - 0s - 363ms/epoch - 2ms/step
+## 208/208 - 0s - 283ms/epoch - 1ms/step
 ##                rfr        lr       svm     keras  boosting  ensemble
 ## rfr      1.0000000 0.6655141 0.5800887 0.6836591 0.9219664 0.9603817
 ## lr       0.6655141 1.0000000 0.5307103 0.5108240 0.6829585 0.5934105
@@ -2336,8 +2343,8 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 ## $cutpoint.mccf1
 ## [1] 0.217907
 ## 
-## 70/70 - 0s - 93ms/epoch - 1ms/step
-## 70/70 - 0s - 79ms/epoch - 1ms/step
+## 70/70 - 0s - 110ms/epoch - 2ms/step
+## 70/70 - 0s - 242ms/epoch - 3ms/step
 ## 
 ## Call:
 ## NULL
@@ -2365,8 +2372,15 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 ## 
 ## Number of Fisher Scoring iterations: 5
 ## 
-## 208/208 - 0s - 156ms/epoch - 750us/step
-## 208/208 - 0s - 204ms/epoch - 980us/step
+##                  2.5 %     97.5 %
+## (Intercept)  2.4238247  3.3204663
+## rfr         -6.5385126 -4.1364072
+## lr           0.5889190  2.1769137
+## svm         -0.2798739  0.7491591
+## keras       -0.5616508  0.0839334
+## boosting    -2.9479473 -0.7647371
+## 208/208 - 0s - 393ms/epoch - 2ms/step
+## 208/208 - 0s - 347ms/epoch - 2ms/step
 ##                rfr        lr       svm     keras  boosting  ensemble
 ## rfr      1.0000000 0.6648830 0.5347826 0.7245870 0.9237242 0.9624202
 ## lr       0.6648830 1.0000000 0.4710980 0.5982605 0.6934042 0.6129214
@@ -2384,9 +2398,9 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 ## $cutpoint.mccf1
 ## [1] 0.3035905
 ## 
-## 70/70 - 0s - 78ms/epoch - 1ms/step
-## 70/70 - 0s - 83ms/epoch - 1ms/step
-## 70/70 - 0s - 81ms/epoch - 1ms/step</code></pre>
+## 70/70 - 0s - 142ms/epoch - 2ms/step
+## 70/70 - 0s - 125ms/epoch - 2ms/step
+## 70/70 - 0s - 235ms/epoch - 3ms/step</code></pre>
 <div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="empirical-results.html#cb128-1" tabindex="-1"></a><span class="co"># metrics on test set using best threshold determined based on train data</span></span>
 <span id="cb128-2"><a href="empirical-results.html#cb128-2" tabindex="-1"></a>ensemble.summary.test <span class="ot">&lt;-</span> ensemble.summary.test <span class="sc">%&gt;%</span></span>
 <span id="cb128-3"><a href="empirical-results.html#cb128-3" tabindex="-1"></a>  <span class="fu">cbind</span>(<span class="at">splitting =</span> <span class="fu">c</span>(<span class="st">&quot;ROC&quot;</span>, <span class="st">&quot;MCCF1&quot;</span>), .) </span>
@@ -2464,7 +2478,7 @@ where <span class="math inline">\(S_k\)</span> is the set of <span class="math i
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="empirical-results.html#cb129-1" tabindex="-1"></a><span class="fu">ggarrange</span>(plot.roc, plot.mccf1, <span class="at">nrow =</span> <span class="dv">1</span>,<span class="at">ncol =</span> <span class="dv">2</span>,</span>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="empirical-results.html#cb129-1" tabindex="-1"></a><span class="fu">ggarrange</span>(plot.roc, plot.mccf1, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="dv">2</span>,</span>
 <span id="cb129-2"><a href="empirical-results.html#cb129-2" tabindex="-1"></a>          <span class="at">legend =</span> <span class="st">&quot;bottom&quot;</span>, <span class="at">common.legend =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="_main_files/figure-html/model.ensemble.test-5.png" width="672" /></p>
 

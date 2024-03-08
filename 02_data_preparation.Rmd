@@ -106,7 +106,7 @@ data.prepare.history <- function(data, feature_identifier) {
     data <- data %>% left_join(com_slope, by = join_by(permno))
   }
 
-  return(data %>% replace(is.na(.), 0)) # !!!!!!!!!!!!!!!!!!!!
+  return(data)# %>% replace(is.na(.), 0))
 }
 
 #' prepares company data for model training and testing purposes
@@ -291,7 +291,13 @@ data.sample.history.lm <- lm(capital_ratio ~ public_date, data = data.sample.his
 # ggplot(data = data.sample.history, aes(public_date, capital_ratio)) +
 #   geom_point() +
 #   geom_abline(slope = data.sample.history.lm$coefficients[2],
-#               intercept = data.sample.history.lm$coefficients[1])
+#               intercept = data.sample.history.lm$coefficients[1]) +
+#   labs(
+#     title = "Scatterplot: Capital ratio vs. public report date",
+#     subtitle = "Company with firm_id 81282",
+#     x = "public report date",
+#     y = "captial ratio"
+#   )
 
 expect_true(data.sample$capital_ratio_h == data.sample.history.lm$coefficients[2])
 ```
