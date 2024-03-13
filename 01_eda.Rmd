@@ -388,7 +388,7 @@ hist_delisting_frequency <- function(
     data,
     feature_identifier,
     feature_description,
-    marginal.data = NULL, marginal.legend = "Modeled delisting frequency",
+    marginal.data = NULL, marginal.legend = "",
     marginal.data2 = NULL, marginal.legend2 = "") {
   feature <- data[[feature_identifier]] # first column
   years_to_delisting <- data$years_to_delisting # first column
@@ -451,13 +451,13 @@ hist_delisting_frequency <- function(
       aes(x = feature, color = "Absolute frequency", fill = "Absolute frequency"),
       binwidth = bin_width
     ) +
-    geom_histogram(
-      aes(
-        x = feature * ifelse(determine_delisting_property(years_to_delisting), 1, NA),
-        color = "Absolute delisting frequency", fill = "Absolute delisting frequency"
-      ),
-      binwidth = bin_width
-    ) +
+    # geom_histogram(
+    #   aes(
+    #     x = feature * ifelse(determine_delisting_property(years_to_delisting), 1, NA),
+    #     color = "Absolute delisting frequency", fill = "Absolute delisting frequency"
+    #   ),
+    #   binwidth = bin_width
+    # ) +
     geom_point(
       data = com.frequency_delisting,
       mapping = aes(
@@ -468,7 +468,7 @@ hist_delisting_frequency <- function(
 
   if (feature_identifier == "pe_exi") {
     plot <- plot + geom_smooth(
-      data = com.frequency_delisting %>% filter(bin_centers <= 0),
+      data = com.frequency_delisting %>% filter(bin_centers <= -0.5),
       method = "loess",
       mapping = aes(
         x = bin_centers, y = inv_scale_function(relative_frequency_delisting, scale, shift),
@@ -476,7 +476,7 @@ hist_delisting_frequency <- function(
       )
     ) +
       geom_smooth(
-        data = com.frequency_delisting %>% filter(bin_centers > 0),
+        data = com.frequency_delisting %>% filter(bin_centers > -0.5),
         mapping = aes(
           x = bin_centers, y = inv_scale_function(relative_frequency_delisting, scale, shift),
           color = "Relative delisting frequency"
@@ -484,14 +484,14 @@ hist_delisting_frequency <- function(
       )
     if (!is.null(marginal.data)) {
       plot <- plot + geom_point(
-        data = marginal.data %>% filter(x <= 0),
+        data = marginal.data %>% filter(x < -0.5),
         mapping = aes(
           x = x, y = inv_scale_function(yhat, scale, shift),
           color = marginal.legend
         )
       ) +
         geom_smooth(
-          data = marginal.data %>% filter(x <= 0),
+          data = marginal.data %>% filter(x < -0.5),
           se = FALSE,
           mapping = aes(
             x = x, y = inv_scale_function(yhat, scale, shift),
@@ -499,14 +499,14 @@ hist_delisting_frequency <- function(
           ), linetype = "dashed"
         ) +
         geom_point(
-          data = marginal.data %>% filter(x > 0),
+          data = marginal.data %>% filter(x >= -0.5),
           mapping = aes(
             x = x, y = inv_scale_function(yhat, scale, shift),
             color = marginal.legend
           )
         ) +
         geom_smooth(
-          data = marginal.data %>% filter(x > 0),
+          data = marginal.data %>% filter(x >= -0.5),
           se = FALSE,
           mapping = aes(
             x = x, y = inv_scale_function(yhat, scale, shift),
@@ -516,14 +516,14 @@ hist_delisting_frequency <- function(
     }
     if (!is.null(marginal.data2)) {
       plot <- plot + geom_point(
-        data = marginal.data2 %>% filter(x <= 0),
+        data = marginal.data2 %>% filter(x < -0.5),
         mapping = aes(
           x = x, y = inv_scale_function(yhat, scale, shift),
           color = marginal.legend2
         )
       ) +
         geom_smooth(
-          data = marginal.data2 %>% filter(x <= 0),
+          data = marginal.data2 %>% filter(x < -0.5),
           se = FALSE,
           mapping = aes(
             x = x, y = inv_scale_function(yhat, scale, shift),
@@ -531,14 +531,14 @@ hist_delisting_frequency <- function(
           ), linetype = "dotted"
         ) +
         geom_point(
-          data = marginal.data2 %>% filter(x > 0),
+          data = marginal.data2 %>% filter(x >= -0.5),
           mapping = aes(
             x = x, y = inv_scale_function(yhat, scale, shift),
             color = marginal.legend2
           )
         ) +
         geom_smooth(
-          data = marginal.data2 %>% filter(x > 0),
+          data = marginal.data2 %>% filter(x >= -0.5),
           se = FALSE,
           mapping = aes(
             x = x, y = inv_scale_function(yhat, scale, shift),
@@ -593,9 +593,8 @@ hist_delisting_frequency <- function(
 
   subtitle <- glue(
     '<span style="color:{colors["gray"]}">**Absolute frequency (active and delisted)**</span>, ',
-    '<span style="color:{colors["blue"]}">**Absolute delisting frequency**</span>, <br>',
     '<span style="color:{colors["orange"]}">**Relative delisting frequency**</span>',
-    ifelse(marginal.legend == "", "", paste0(', <span style="color:{colors["magenta"]}">**', marginal.legend, "**</span>")),
+    ifelse(marginal.legend == "", "", paste0(', <br><span style="color:{colors["magenta"]}">**', marginal.legend, "**</span>")),
     ifelse(marginal.legend2 == "", "", paste0(',<br><span style="color:{colors["lightblue"]}">**', marginal.legend2, "**</span>"))
   )
 
@@ -609,12 +608,12 @@ hist_delisting_frequency <- function(
   ) +
   scale_color_manual(
     breaks = c(
-      "Absolute frequency", "Absolute delisting frequency",
+      "Absolute frequency", #"Absolute delisting frequency",
       "Relative delisting frequency", marginal.legend, marginal.legend2
     ),
     values = c(
       as.character(colors["gray"]),
-      as.character(colors["blue"]),
+      #as.character(colors["blue"]),
       as.character(colors["orange"]),
       as.character(colors["magenta"]),
       as.character(colors["lightblue"])
@@ -623,7 +622,7 @@ hist_delisting_frequency <- function(
   scale_fill_manual(
     values = c(
       "Absolute frequency" = as.character(colors["gray"]),
-      "Absolute delisting frequency" = as.character(colors["blue"]),
+      #"Absolute delisting frequency" = as.character(colors["blue"]),
       "Relative delisting frequency" = as.character(colors["orange"]),
       as.character(colors["magenta"]),
       as.character(colors["lightblue"])
