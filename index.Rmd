@@ -1,7 +1,7 @@
 ---
-title: "Prediction of Delisting using a Machine Learning Ensemble"
+title: "Prediction of Delisting using a Repeated Measures Random Forest"
 author: "David Neuhäusler, Jungyeon Yoon, Richard A. Levine, Juanjuan Fan"
-date: "February 2024"
+date: "March 2024"
 site: bookdown::bookdown_site
 documentclass: book
 description: |
@@ -42,7 +42,7 @@ library(gbm) # generalized boosted regression models
 
 library(devtools) # required for reticulate
 library(reticulate) # embeds Python session within R session
-library(tensorflow) # open-source machine learning platfrom
+library(tensorflow) # open-source machine learning platform
 # install_tensorflow()
 library(keras) # high-level API to build and train deep learning models
 # install_keras()
@@ -116,7 +116,7 @@ N_QUARTERS_FIN_RATIOS_REQUIRED <- N_QUARTERS_FIN_RATIOS + N_QUARTERS_GAP_TO_DELI
 N_YEARS_FIN_RATIO_HISTORY <- 7
 
 # imputation constants
-REDO_MICE_IMPUTATION_PPM <- FALSE
+REDO_MICE_IMPUTATION_PPM <- TRUE
 
 # model constants
 REDO_MODEL_FITTING <- FALSE
@@ -451,7 +451,7 @@ com <- as_tibble(com_ratio) %>%
   ) %>%
   arrange(public_date)
 
-remove(com_ratio)
+#remove(com_ratio)
 ```
 
 Macroeconomic features may improve model accuracy if delistings are affected by the overall economic situation. This behavior seems reasonable and will be checked in the exploratory data analysis. The data set with macroeconomic data contains the annual rate of change of four indices quarterly.\
