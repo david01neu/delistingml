@@ -97,6 +97,7 @@ plot.nodesize.metrics
 
 
 ```{r}
+load("../data/data.test.2023.RData")
 #data.training <- data.training %>% select(-public_date_selected)
 rf <- rfsrc(
         response ~ .,
@@ -116,11 +117,11 @@ rf.metrics.roc.cutpoint <- compute.roc(
   (data.training %>% drop_na())$response)$best_cutpoint
 
 
-rf.pred.probability.training <- predict.rfsrc(rf, data.test)$predicted
+rf.pred.probability.test <- predict.rfsrc(rf, data.test)$predicted
 
 # metrics on test set using best threshold determined based on train data
-rf.summary.test <- rbind(compute.metrics(data.test$response, rmrf.pred.probability.test >= rf.metrics.roc.cutpoint),
-      compute.metrics(data.test$response, rmrf.pred.probability.test >= rf.metrics$cutpoint.mccf1)) %>%
+rf.summary.test <- rbind(compute.metrics((data.test %>% drop_na())$response, rf.pred.probability.test >= rf.metrics.roc.cutpoint),
+      compute.metrics((data.test %>% drop_na())$response, rf.pred.probability.test >= rf.metrics$cutpoint.mccf1)) %>%
   cbind(splitting = c("ROC", "MCCF1"), .)
 pander(rf.summary.test, caption = "Random forest on test data")
 ```
@@ -150,6 +151,8 @@ rmrf <- growRF_Parallel(ntrees = 100,
 Sys.time() # 6 hours
 save(rmrf, file = "../data_rmrf/tmp.RData")
 
+load("../data_rmrf/tmp.RData")
+rmrf <- tmp
 rmrf.pred.probability.training <- predictRF(rmrf, newdata = data.training, prediction = "overall", checkCases = FALSE, corstr = "ar1")
 
 # determine thesholds on training data
@@ -159,7 +162,7 @@ rmrf.metrics.roc.cutpoint <- compute.roc(
   data.training$response)$best_cutpoint
 
 
-load("../data_rmrf/tmp.RData")
+
 rmrf.pred.probability.test <- predictRF(rmrf, newdata = data.test, prediction = "overall", checkCases = FALSE, corstr = "ar1")
 
 # metrics on test set using best threshold determined based on train data
