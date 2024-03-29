@@ -1,7 +1,7 @@
 ---
 title: "Prediction of Delisting using a Machine Learning Ensemble"
 author: "David Neuhäusler, Jungyeon Yoon, Richard A. Levine, Juanjuan Fan"
-date: "February 2024"
+date: "March 2024"
 site: bookdown::bookdown_site
 documentclass: book
 description: |

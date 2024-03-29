@@ -775,23 +775,25 @@ data frame.</p>
 <span id="cb10-98"><a href="data.html#cb10-98" tabindex="-1"></a>      <span class="at">cols =</span> <span class="sc">-</span>observation_date,</span>
 <span id="cb10-99"><a href="data.html#cb10-99" tabindex="-1"></a>      <span class="at">names_to =</span> <span class="st">&quot;index_chg&quot;</span>,</span>
 <span id="cb10-100"><a href="data.html#cb10-100" tabindex="-1"></a>      <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span></span>
-<span id="cb10-101"><a href="data.html#cb10-101" tabindex="-1"></a>    ),</span>
-<span id="cb10-102"><a href="data.html#cb10-102" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> observation_date, <span class="at">y =</span> value)</span>
-<span id="cb10-103"><a href="data.html#cb10-103" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb10-104"><a href="data.html#cb10-104" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;1985-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;1987-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb10-105"><a href="data.html#cb10-105" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;2000-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;2002-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb10-106"><a href="data.html#cb10-106" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;2008-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;2010-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb10-107"><a href="data.html#cb10-107" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;1990-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;1992-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb10-108"><a href="data.html#cb10-108" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb10-109"><a href="data.html#cb10-109" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(. <span class="sc">~</span> index_chg, <span class="at">scales =</span> <span class="st">&quot;free_y&quot;</span>, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="at">index_chg =</span> macro.ratios.name)) <span class="sc">+</span></span>
-<span id="cb10-110"><a href="data.html#cb10-110" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-111"><a href="data.html#cb10-111" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Macro economic index changes&quot;</span>,</span>
-<span id="cb10-112"><a href="data.html#cb10-112" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;calendar year&quot;</span>,</span>
-<span id="cb10-113"><a href="data.html#cb10-113" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;one-year change of index&quot;</span></span>
-<span id="cb10-114"><a href="data.html#cb10-114" tabindex="-1"></a>  )</span>
-<span id="cb10-115"><a href="data.html#cb10-115" tabindex="-1"></a></span>
-<span id="cb10-116"><a href="data.html#cb10-116" tabindex="-1"></a><span class="fu">ggarrange</span>(plot_stock_listings_delistings, plot_macro_ratios,</span>
-<span id="cb10-117"><a href="data.html#cb10-117" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<span id="cb10-101"><a href="data.html#cb10-101" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">transform</span>(</span>
+<span id="cb10-102"><a href="data.html#cb10-102" tabindex="-1"></a>      <span class="at">index_chg =</span> <span class="fu">factor</span>(index_chg, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;gdpc1_chg&quot;</span>, <span class="st">&quot;fredfunds_chg&quot;</span>, <span class="st">&quot;cpiaucsl_chg&quot;</span>, <span class="st">&quot;sp500_chg&quot;</span>))</span>
+<span id="cb10-103"><a href="data.html#cb10-103" tabindex="-1"></a>    ),</span>
+<span id="cb10-104"><a href="data.html#cb10-104" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> observation_date, <span class="at">y =</span> value)</span>
+<span id="cb10-105"><a href="data.html#cb10-105" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb10-106"><a href="data.html#cb10-106" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;1985-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;1987-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb10-107"><a href="data.html#cb10-107" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;2000-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;2002-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb10-108"><a href="data.html#cb10-108" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;2008-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;2010-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb10-109"><a href="data.html#cb10-109" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;rect&quot;</span>, <span class="at">xmin =</span> <span class="fu">ymd</span>(<span class="st">&quot;1990-01-01&quot;</span>), <span class="at">xmax =</span> <span class="fu">ymd</span>(<span class="st">&quot;1992-01-01&quot;</span>), <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>, <span class="at">fill =</span> colors[<span class="st">&quot;green&quot;</span>], <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb10-110"><a href="data.html#cb10-110" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb10-111"><a href="data.html#cb10-111" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(. <span class="sc">~</span> index_chg, <span class="at">scales =</span> <span class="st">&quot;free_y&quot;</span>, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="at">index_chg =</span> macro.ratios.name)) <span class="sc">+</span></span>
+<span id="cb10-112"><a href="data.html#cb10-112" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-113"><a href="data.html#cb10-113" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Macro economic index changes&quot;</span>,</span>
+<span id="cb10-114"><a href="data.html#cb10-114" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;calendar year&quot;</span>,</span>
+<span id="cb10-115"><a href="data.html#cb10-115" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;one-year change of index&quot;</span></span>
+<span id="cb10-116"><a href="data.html#cb10-116" tabindex="-1"></a>  )</span>
+<span id="cb10-117"><a href="data.html#cb10-117" tabindex="-1"></a></span>
+<span id="cb10-118"><a href="data.html#cb10-118" tabindex="-1"></a><span class="fu">ggarrange</span>(plot_stock_listings_delistings, plot_macro_ratios,</span>
+<span id="cb10-119"><a href="data.html#cb10-119" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="_main_files/figure-html/number_of_delisting_subsequent_year-1.png" width="672" /></p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="data.html#cb11-1" tabindex="-1"></a><span class="co"># months of delisting</span></span>
 <span id="cb11-2"><a href="data.html#cb11-2" tabindex="-1"></a>com <span class="sc">%&gt;%</span></span>
@@ -1229,7 +1231,7 @@ margin ratios <code>opmad</code> and <code>opmbd</code> as well as the liquidity
 <span id="cb19-13"><a href="data.html#cb19-13" tabindex="-1"></a>    data,</span>
 <span id="cb19-14"><a href="data.html#cb19-14" tabindex="-1"></a>    feature_identifier,</span>
 <span id="cb19-15"><a href="data.html#cb19-15" tabindex="-1"></a>    feature_description,</span>
-<span id="cb19-16"><a href="data.html#cb19-16" tabindex="-1"></a>    <span class="at">marginal.data =</span> <span class="cn">NULL</span>, <span class="at">marginal.legend =</span> <span class="st">&quot;Modeled delisting frequency&quot;</span>,</span>
+<span id="cb19-16"><a href="data.html#cb19-16" tabindex="-1"></a>    <span class="at">marginal.data =</span> <span class="cn">NULL</span>, <span class="at">marginal.legend =</span> <span class="st">&quot;&quot;</span>,</span>
 <span id="cb19-17"><a href="data.html#cb19-17" tabindex="-1"></a>    <span class="at">marginal.data2 =</span> <span class="cn">NULL</span>, <span class="at">marginal.legend2 =</span> <span class="st">&quot;&quot;</span>) {</span>
 <span id="cb19-18"><a href="data.html#cb19-18" tabindex="-1"></a>  feature <span class="ot">&lt;-</span> data[[feature_identifier]] <span class="co"># first column</span></span>
 <span id="cb19-19"><a href="data.html#cb19-19" tabindex="-1"></a>  years_to_delisting <span class="ot">&lt;-</span> data<span class="sc">$</span>years_to_delisting <span class="co"># first column</span></span>
@@ -1292,227 +1294,180 @@ margin ratios <code>opmad</code> and <code>opmbd</code> as well as the liquidity
 <span id="cb19-76"><a href="data.html#cb19-76" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> feature, <span class="at">color =</span> <span class="st">&quot;Absolute frequency&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Absolute frequency&quot;</span>),</span>
 <span id="cb19-77"><a href="data.html#cb19-77" tabindex="-1"></a>      <span class="at">binwidth =</span> bin_width</span>
 <span id="cb19-78"><a href="data.html#cb19-78" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb19-79"><a href="data.html#cb19-79" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(</span>
-<span id="cb19-80"><a href="data.html#cb19-80" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
-<span id="cb19-81"><a href="data.html#cb19-81" tabindex="-1"></a>        <span class="at">x =</span> feature <span class="sc">*</span> <span class="fu">ifelse</span>(<span class="fu">determine_delisting_property</span>(years_to_delisting), <span class="dv">1</span>, <span class="cn">NA</span>),</span>
-<span id="cb19-82"><a href="data.html#cb19-82" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Absolute delisting frequency&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Absolute delisting frequency&quot;</span></span>
-<span id="cb19-83"><a href="data.html#cb19-83" tabindex="-1"></a>      ),</span>
-<span id="cb19-84"><a href="data.html#cb19-84" tabindex="-1"></a>      <span class="at">binwidth =</span> bin_width</span>
-<span id="cb19-85"><a href="data.html#cb19-85" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb19-86"><a href="data.html#cb19-86" tabindex="-1"></a>    <span class="fu">geom_point</span>(</span>
-<span id="cb19-87"><a href="data.html#cb19-87" tabindex="-1"></a>      <span class="at">data =</span> com.frequency_delisting,</span>
-<span id="cb19-88"><a href="data.html#cb19-88" tabindex="-1"></a>      <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-89"><a href="data.html#cb19-89" tabindex="-1"></a>        <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
-<span id="cb19-90"><a href="data.html#cb19-90" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
-<span id="cb19-91"><a href="data.html#cb19-91" tabindex="-1"></a>      )</span>
-<span id="cb19-92"><a href="data.html#cb19-92" tabindex="-1"></a>    )</span>
-<span id="cb19-93"><a href="data.html#cb19-93" tabindex="-1"></a></span>
-<span id="cb19-94"><a href="data.html#cb19-94" tabindex="-1"></a>  <span class="cf">if</span> (feature_identifier <span class="sc">==</span> <span class="st">&quot;pe_exi&quot;</span>) {</span>
-<span id="cb19-95"><a href="data.html#cb19-95" tabindex="-1"></a>    plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-96"><a href="data.html#cb19-96" tabindex="-1"></a>      <span class="at">data =</span> com.frequency_delisting <span class="sc">%&gt;%</span> <span class="fu">filter</span>(bin_centers <span class="sc">&lt;=</span> <span class="dv">0</span>),</span>
-<span id="cb19-97"><a href="data.html#cb19-97" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">&quot;loess&quot;</span>,</span>
-<span id="cb19-98"><a href="data.html#cb19-98" tabindex="-1"></a>      <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-99"><a href="data.html#cb19-99" tabindex="-1"></a>        <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
-<span id="cb19-100"><a href="data.html#cb19-100" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
-<span id="cb19-101"><a href="data.html#cb19-101" tabindex="-1"></a>      )</span>
-<span id="cb19-102"><a href="data.html#cb19-102" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb19-103"><a href="data.html#cb19-103" tabindex="-1"></a>      <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-104"><a href="data.html#cb19-104" tabindex="-1"></a>        <span class="at">data =</span> com.frequency_delisting <span class="sc">%&gt;%</span> <span class="fu">filter</span>(bin_centers <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
-<span id="cb19-105"><a href="data.html#cb19-105" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-106"><a href="data.html#cb19-106" tabindex="-1"></a>          <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
-<span id="cb19-107"><a href="data.html#cb19-107" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
-<span id="cb19-108"><a href="data.html#cb19-108" tabindex="-1"></a>        )</span>
-<span id="cb19-109"><a href="data.html#cb19-109" tabindex="-1"></a>      )</span>
-<span id="cb19-110"><a href="data.html#cb19-110" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data)) {</span>
-<span id="cb19-111"><a href="data.html#cb19-111" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb19-112"><a href="data.html#cb19-112" tabindex="-1"></a>        <span class="at">data =</span> marginal.data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&lt;=</span> <span class="dv">0</span>),</span>
-<span id="cb19-113"><a href="data.html#cb19-113" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-114"><a href="data.html#cb19-114" tabindex="-1"></a>          <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-115"><a href="data.html#cb19-115" tabindex="-1"></a>          <span class="at">color =</span> marginal.legend</span>
-<span id="cb19-116"><a href="data.html#cb19-116" tabindex="-1"></a>        )</span>
-<span id="cb19-117"><a href="data.html#cb19-117" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb19-118"><a href="data.html#cb19-118" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-119"><a href="data.html#cb19-119" tabindex="-1"></a>          <span class="at">data =</span> marginal.data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&lt;=</span> <span class="dv">0</span>),</span>
-<span id="cb19-120"><a href="data.html#cb19-120" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-121"><a href="data.html#cb19-121" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-122"><a href="data.html#cb19-122" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-123"><a href="data.html#cb19-123" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
-<span id="cb19-124"><a href="data.html#cb19-124" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
-<span id="cb19-125"><a href="data.html#cb19-125" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb19-126"><a href="data.html#cb19-126" tabindex="-1"></a>        <span class="fu">geom_point</span>(</span>
-<span id="cb19-127"><a href="data.html#cb19-127" tabindex="-1"></a>          <span class="at">data =</span> marginal.data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
-<span id="cb19-128"><a href="data.html#cb19-128" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-129"><a href="data.html#cb19-129" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-130"><a href="data.html#cb19-130" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
-<span id="cb19-131"><a href="data.html#cb19-131" tabindex="-1"></a>          )</span>
-<span id="cb19-132"><a href="data.html#cb19-132" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb19-133"><a href="data.html#cb19-133" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-134"><a href="data.html#cb19-134" tabindex="-1"></a>          <span class="at">data =</span> marginal.data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
-<span id="cb19-135"><a href="data.html#cb19-135" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-136"><a href="data.html#cb19-136" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-137"><a href="data.html#cb19-137" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-138"><a href="data.html#cb19-138" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
-<span id="cb19-139"><a href="data.html#cb19-139" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
-<span id="cb19-140"><a href="data.html#cb19-140" tabindex="-1"></a>        )</span>
-<span id="cb19-141"><a href="data.html#cb19-141" tabindex="-1"></a>    }</span>
-<span id="cb19-142"><a href="data.html#cb19-142" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data2)) {</span>
-<span id="cb19-143"><a href="data.html#cb19-143" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb19-144"><a href="data.html#cb19-144" tabindex="-1"></a>        <span class="at">data =</span> marginal.data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&lt;=</span> <span class="dv">0</span>),</span>
-<span id="cb19-145"><a href="data.html#cb19-145" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-146"><a href="data.html#cb19-146" tabindex="-1"></a>          <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-147"><a href="data.html#cb19-147" tabindex="-1"></a>          <span class="at">color =</span> marginal.legend2</span>
-<span id="cb19-148"><a href="data.html#cb19-148" tabindex="-1"></a>        )</span>
-<span id="cb19-149"><a href="data.html#cb19-149" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb19-150"><a href="data.html#cb19-150" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-151"><a href="data.html#cb19-151" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&lt;=</span> <span class="dv">0</span>),</span>
-<span id="cb19-152"><a href="data.html#cb19-152" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-153"><a href="data.html#cb19-153" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-154"><a href="data.html#cb19-154" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-155"><a href="data.html#cb19-155" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
-<span id="cb19-156"><a href="data.html#cb19-156" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span></span>
-<span id="cb19-157"><a href="data.html#cb19-157" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb19-158"><a href="data.html#cb19-158" tabindex="-1"></a>        <span class="fu">geom_point</span>(</span>
-<span id="cb19-159"><a href="data.html#cb19-159" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
-<span id="cb19-160"><a href="data.html#cb19-160" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-161"><a href="data.html#cb19-161" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-162"><a href="data.html#cb19-162" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
-<span id="cb19-163"><a href="data.html#cb19-163" tabindex="-1"></a>          )</span>
-<span id="cb19-164"><a href="data.html#cb19-164" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb19-165"><a href="data.html#cb19-165" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-166"><a href="data.html#cb19-166" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
-<span id="cb19-167"><a href="data.html#cb19-167" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-168"><a href="data.html#cb19-168" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-169"><a href="data.html#cb19-169" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-170"><a href="data.html#cb19-170" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
-<span id="cb19-171"><a href="data.html#cb19-171" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span></span>
-<span id="cb19-172"><a href="data.html#cb19-172" tabindex="-1"></a>        )</span>
-<span id="cb19-173"><a href="data.html#cb19-173" tabindex="-1"></a>    }</span>
-<span id="cb19-174"><a href="data.html#cb19-174" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb19-175"><a href="data.html#cb19-175" tabindex="-1"></a>    plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-176"><a href="data.html#cb19-176" tabindex="-1"></a>      <span class="at">data =</span> com.frequency_delisting,</span>
-<span id="cb19-177"><a href="data.html#cb19-177" tabindex="-1"></a>      <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-178"><a href="data.html#cb19-178" tabindex="-1"></a>        <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
-<span id="cb19-179"><a href="data.html#cb19-179" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
-<span id="cb19-180"><a href="data.html#cb19-180" tabindex="-1"></a>      )</span>
-<span id="cb19-181"><a href="data.html#cb19-181" tabindex="-1"></a>    )</span>
-<span id="cb19-182"><a href="data.html#cb19-182" tabindex="-1"></a></span>
-<span id="cb19-183"><a href="data.html#cb19-183" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data)) {</span>
-<span id="cb19-184"><a href="data.html#cb19-184" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb19-185"><a href="data.html#cb19-185" tabindex="-1"></a>        <span class="at">data =</span> marginal.data,</span>
-<span id="cb19-186"><a href="data.html#cb19-186" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-187"><a href="data.html#cb19-187" tabindex="-1"></a>          <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-188"><a href="data.html#cb19-188" tabindex="-1"></a>          <span class="at">color =</span> marginal.legend</span>
-<span id="cb19-189"><a href="data.html#cb19-189" tabindex="-1"></a>        )</span>
-<span id="cb19-190"><a href="data.html#cb19-190" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb19-191"><a href="data.html#cb19-191" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-192"><a href="data.html#cb19-192" tabindex="-1"></a>          <span class="at">data =</span> marginal.data,</span>
-<span id="cb19-193"><a href="data.html#cb19-193" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-194"><a href="data.html#cb19-194" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-195"><a href="data.html#cb19-195" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-196"><a href="data.html#cb19-196" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
-<span id="cb19-197"><a href="data.html#cb19-197" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
-<span id="cb19-198"><a href="data.html#cb19-198" tabindex="-1"></a>        )</span>
-<span id="cb19-199"><a href="data.html#cb19-199" tabindex="-1"></a>    }</span>
-<span id="cb19-200"><a href="data.html#cb19-200" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data2)) {</span>
-<span id="cb19-201"><a href="data.html#cb19-201" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb19-202"><a href="data.html#cb19-202" tabindex="-1"></a>        <span class="at">data =</span> marginal.data2,</span>
-<span id="cb19-203"><a href="data.html#cb19-203" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-204"><a href="data.html#cb19-204" tabindex="-1"></a>          <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-205"><a href="data.html#cb19-205" tabindex="-1"></a>          <span class="at">color =</span> marginal.legend2</span>
-<span id="cb19-206"><a href="data.html#cb19-206" tabindex="-1"></a>        )</span>
-<span id="cb19-207"><a href="data.html#cb19-207" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb19-208"><a href="data.html#cb19-208" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
-<span id="cb19-209"><a href="data.html#cb19-209" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2,</span>
-<span id="cb19-210"><a href="data.html#cb19-210" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-211"><a href="data.html#cb19-211" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb19-212"><a href="data.html#cb19-212" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
-<span id="cb19-213"><a href="data.html#cb19-213" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
-<span id="cb19-214"><a href="data.html#cb19-214" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span></span>
-<span id="cb19-215"><a href="data.html#cb19-215" tabindex="-1"></a>        )</span>
-<span id="cb19-216"><a href="data.html#cb19-216" tabindex="-1"></a>    }</span>
-<span id="cb19-217"><a href="data.html#cb19-217" tabindex="-1"></a>  }</span>
-<span id="cb19-218"><a href="data.html#cb19-218" tabindex="-1"></a></span>
-<span id="cb19-219"><a href="data.html#cb19-219" tabindex="-1"></a>  subtitle <span class="ot">&lt;-</span> <span class="fu">glue</span>(</span>
-<span id="cb19-220"><a href="data.html#cb19-220" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;gray&quot;]}&quot;&gt;**Absolute frequency (active and delisted)**&lt;/span&gt;, &#39;</span>,</span>
-<span id="cb19-221"><a href="data.html#cb19-221" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;blue&quot;]}&quot;&gt;**Absolute delisting frequency**&lt;/span&gt;, &lt;br&gt;&#39;</span>,</span>
-<span id="cb19-222"><a href="data.html#cb19-222" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;orange&quot;]}&quot;&gt;**Relative delisting frequency**&lt;/span&gt;&#39;</span>,</span>
-<span id="cb19-223"><a href="data.html#cb19-223" tabindex="-1"></a>    <span class="fu">ifelse</span>(marginal.legend <span class="sc">==</span> <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">paste0</span>(<span class="st">&#39;, &lt;span style=&quot;color:{colors[&quot;magenta&quot;]}&quot;&gt;**&#39;</span>, marginal.legend, <span class="st">&quot;**&lt;/span&gt;&quot;</span>)),</span>
-<span id="cb19-224"><a href="data.html#cb19-224" tabindex="-1"></a>    <span class="fu">ifelse</span>(marginal.legend2 <span class="sc">==</span> <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">paste0</span>(<span class="st">&#39;,&lt;br&gt;&lt;span style=&quot;color:{colors[&quot;lightblue&quot;]}&quot;&gt;**&#39;</span>, marginal.legend2, <span class="st">&quot;**&lt;/span&gt;&quot;</span>))</span>
-<span id="cb19-225"><a href="data.html#cb19-225" tabindex="-1"></a>  )</span>
-<span id="cb19-226"><a href="data.html#cb19-226" tabindex="-1"></a></span>
-<span id="cb19-227"><a href="data.html#cb19-227" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb19-228"><a href="data.html#cb19-228" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Frequency&quot;</span>,</span>
-<span id="cb19-229"><a href="data.html#cb19-229" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(min_y_first, max_y_first),</span>
-<span id="cb19-230"><a href="data.html#cb19-230" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">sec_axis</span>(<span class="sc">~</span> <span class="fu">scale_function</span>(., scale, shift),</span>
-<span id="cb19-231"><a href="data.html#cb19-231" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
-<span id="cb19-232"><a href="data.html#cb19-232" tabindex="-1"></a>    ),</span>
-<span id="cb19-233"><a href="data.html#cb19-233" tabindex="-1"></a>    <span class="at">oob =</span> scales<span class="sc">::</span>rescale_none</span>
-<span id="cb19-234"><a href="data.html#cb19-234" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-235"><a href="data.html#cb19-235" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
-<span id="cb19-236"><a href="data.html#cb19-236" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(</span>
-<span id="cb19-237"><a href="data.html#cb19-237" tabindex="-1"></a>      <span class="st">&quot;Absolute frequency&quot;</span>, <span class="st">&quot;Absolute delisting frequency&quot;</span>,</span>
-<span id="cb19-238"><a href="data.html#cb19-238" tabindex="-1"></a>      <span class="st">&quot;Relative delisting frequency&quot;</span>, marginal.legend, marginal.legend2</span>
-<span id="cb19-239"><a href="data.html#cb19-239" tabindex="-1"></a>    ),</span>
-<span id="cb19-240"><a href="data.html#cb19-240" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
-<span id="cb19-241"><a href="data.html#cb19-241" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;gray&quot;</span>]),</span>
-<span id="cb19-242"><a href="data.html#cb19-242" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;blue&quot;</span>]),</span>
-<span id="cb19-243"><a href="data.html#cb19-243" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>]),</span>
-<span id="cb19-244"><a href="data.html#cb19-244" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;magenta&quot;</span>]),</span>
-<span id="cb19-245"><a href="data.html#cb19-245" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;lightblue&quot;</span>])</span>
-<span id="cb19-246"><a href="data.html#cb19-246" tabindex="-1"></a>    )</span>
-<span id="cb19-247"><a href="data.html#cb19-247" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-248"><a href="data.html#cb19-248" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
-<span id="cb19-249"><a href="data.html#cb19-249" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
-<span id="cb19-250"><a href="data.html#cb19-250" tabindex="-1"></a>      <span class="st">&quot;Absolute frequency&quot;</span> <span class="ot">=</span> <span class="fu">as.character</span>(colors[<span class="st">&quot;gray&quot;</span>]),</span>
-<span id="cb19-251"><a href="data.html#cb19-251" tabindex="-1"></a>      <span class="st">&quot;Absolute delisting frequency&quot;</span> <span class="ot">=</span> <span class="fu">as.character</span>(colors[<span class="st">&quot;blue&quot;</span>]),</span>
-<span id="cb19-252"><a href="data.html#cb19-252" tabindex="-1"></a>      <span class="st">&quot;Relative delisting frequency&quot;</span> <span class="ot">=</span> <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>]),</span>
-<span id="cb19-253"><a href="data.html#cb19-253" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;magenta&quot;</span>]),</span>
-<span id="cb19-254"><a href="data.html#cb19-254" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;lightblue&quot;</span>])</span>
-<span id="cb19-255"><a href="data.html#cb19-255" tabindex="-1"></a>    )</span>
-<span id="cb19-256"><a href="data.html#cb19-256" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-257"><a href="data.html#cb19-257" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-258"><a href="data.html#cb19-258" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Histogram of &quot;</span>, feature_description),</span>
-<span id="cb19-259"><a href="data.html#cb19-259" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle,</span>
-<span id="cb19-260"><a href="data.html#cb19-260" tabindex="-1"></a>    <span class="at">x =</span> feature_identifier</span>
-<span id="cb19-261"><a href="data.html#cb19-261" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-262"><a href="data.html#cb19-262" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb19-263"><a href="data.html#cb19-263" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb19-264"><a href="data.html#cb19-264" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_markdown</span>(<span class="at">color =</span> colors[<span class="st">&quot;gray&quot;</span>]),</span>
-<span id="cb19-265"><a href="data.html#cb19-265" tabindex="-1"></a>    <span class="at">axis.title.y.right =</span> <span class="fu">element_markdown</span>(<span class="at">color =</span> colors[<span class="st">&quot;orange&quot;</span>]),</span>
-<span id="cb19-266"><a href="data.html#cb19-266" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
-<span id="cb19-267"><a href="data.html#cb19-267" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-268"><a href="data.html#cb19-268" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
-<span id="cb19-269"><a href="data.html#cb19-269" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb19-270"><a href="data.html#cb19-270" tabindex="-1"></a>      <span class="at">x =</span> max_x, <span class="at">y =</span> max_y_first,</span>
-<span id="cb19-271"><a href="data.html#cb19-271" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">&quot;outliers are winsorized&quot;</span></span>
-<span id="cb19-272"><a href="data.html#cb19-272" tabindex="-1"></a>    ),</span>
-<span id="cb19-273"><a href="data.html#cb19-273" tabindex="-1"></a>    <span class="at">stat =</span> <span class="st">&quot;unique&quot;</span>,</span>
-<span id="cb19-274"><a href="data.html#cb19-274" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="dv">1</span>,</span>
-<span id="cb19-275"><a href="data.html#cb19-275" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb19-276"><a href="data.html#cb19-276" tabindex="-1"></a>  )</span>
-<span id="cb19-277"><a href="data.html#cb19-277" tabindex="-1"></a></span>
-<span id="cb19-278"><a href="data.html#cb19-278" tabindex="-1"></a>  <span class="fu">return</span>(plot)</span>
-<span id="cb19-279"><a href="data.html#cb19-279" tabindex="-1"></a>}</span>
-<span id="cb19-280"><a href="data.html#cb19-280" tabindex="-1"></a></span>
-<span id="cb19-281"><a href="data.html#cb19-281" tabindex="-1"></a><span class="co"># winsorize features</span></span>
-<span id="cb19-282"><a href="data.html#cb19-282" tabindex="-1"></a>com.winsorized <span class="ot">&lt;-</span> <span class="fu">data.prepare.winsorize</span>(com, com.features.fin<span class="sc">$</span>identifier,</span>
-<span id="cb19-283"><a href="data.html#cb19-283" tabindex="-1"></a>  <span class="at">lower_quantile_boundary =</span> <span class="fl">0.05</span>,</span>
-<span id="cb19-284"><a href="data.html#cb19-284" tabindex="-1"></a>  <span class="at">upper_quantile_boundary =</span> <span class="fl">0.95</span></span>
-<span id="cb19-285"><a href="data.html#cb19-285" tabindex="-1"></a>)</span>
-<span id="cb19-286"><a href="data.html#cb19-286" tabindex="-1"></a></span>
-<span id="cb19-287"><a href="data.html#cb19-287" tabindex="-1"></a><span class="co"># plot histogram of features and delisting frequency</span></span>
-<span id="cb19-288"><a href="data.html#cb19-288" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb19-289"><a href="data.html#cb19-289" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(com.features.fin<span class="sc">$</span>identifier)) {</span>
-<span id="cb19-290"><a href="data.html#cb19-290" tabindex="-1"></a>  feature_description <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">1</span>]]</span>
-<span id="cb19-291"><a href="data.html#cb19-291" tabindex="-1"></a>  feature_identifier <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">2</span>]]</span>
-<span id="cb19-292"><a href="data.html#cb19-292" tabindex="-1"></a></span>
-<span id="cb19-293"><a href="data.html#cb19-293" tabindex="-1"></a>  plots[[feature_identifier]] <span class="ot">&lt;-</span> <span class="fu">hist_delisting_frequency</span>(</span>
-<span id="cb19-294"><a href="data.html#cb19-294" tabindex="-1"></a>    com.winsorized <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">all_of</span>(feature_identifier), years_to_delisting),</span>
-<span id="cb19-295"><a href="data.html#cb19-295" tabindex="-1"></a>    feature_identifier,</span>
-<span id="cb19-296"><a href="data.html#cb19-296" tabindex="-1"></a>    feature_description</span>
-<span id="cb19-297"><a href="data.html#cb19-297" tabindex="-1"></a>  )</span>
-<span id="cb19-298"><a href="data.html#cb19-298" tabindex="-1"></a>  <span class="fu">print</span>(plots[[feature_identifier]])</span>
-<span id="cb19-299"><a href="data.html#cb19-299" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb19-79"><a href="data.html#cb19-79" tabindex="-1"></a>    <span class="fu">geom_point</span>(</span>
+<span id="cb19-80"><a href="data.html#cb19-80" tabindex="-1"></a>      <span class="at">data =</span> com.frequency_delisting,</span>
+<span id="cb19-81"><a href="data.html#cb19-81" tabindex="-1"></a>      <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-82"><a href="data.html#cb19-82" tabindex="-1"></a>        <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
+<span id="cb19-83"><a href="data.html#cb19-83" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
+<span id="cb19-84"><a href="data.html#cb19-84" tabindex="-1"></a>      )</span>
+<span id="cb19-85"><a href="data.html#cb19-85" tabindex="-1"></a>    )</span>
+<span id="cb19-86"><a href="data.html#cb19-86" tabindex="-1"></a></span>
+<span id="cb19-87"><a href="data.html#cb19-87" tabindex="-1"></a>  <span class="cf">if</span> (feature_identifier <span class="sc">==</span> <span class="st">&quot;pe_exi&quot;</span>) {</span>
+<span id="cb19-88"><a href="data.html#cb19-88" tabindex="-1"></a>    plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-89"><a href="data.html#cb19-89" tabindex="-1"></a>      <span class="at">data =</span> com.frequency_delisting <span class="sc">%&gt;%</span> <span class="fu">filter</span>(bin_centers <span class="sc">&lt;=</span> <span class="sc">-</span><span class="fl">0.5</span>),</span>
+<span id="cb19-90"><a href="data.html#cb19-90" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">&quot;loess&quot;</span>,</span>
+<span id="cb19-91"><a href="data.html#cb19-91" tabindex="-1"></a>      <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-92"><a href="data.html#cb19-92" tabindex="-1"></a>        <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
+<span id="cb19-93"><a href="data.html#cb19-93" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
+<span id="cb19-94"><a href="data.html#cb19-94" tabindex="-1"></a>      )</span>
+<span id="cb19-95"><a href="data.html#cb19-95" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb19-96"><a href="data.html#cb19-96" tabindex="-1"></a>      <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-97"><a href="data.html#cb19-97" tabindex="-1"></a>        <span class="at">data =</span> com.frequency_delisting <span class="sc">%&gt;%</span> <span class="fu">filter</span>(bin_centers <span class="sc">&gt;</span> <span class="sc">-</span><span class="fl">0.5</span>),</span>
+<span id="cb19-98"><a href="data.html#cb19-98" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-99"><a href="data.html#cb19-99" tabindex="-1"></a>          <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
+<span id="cb19-100"><a href="data.html#cb19-100" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
+<span id="cb19-101"><a href="data.html#cb19-101" tabindex="-1"></a>        )</span>
+<span id="cb19-102"><a href="data.html#cb19-102" tabindex="-1"></a>      )</span>
+<span id="cb19-103"><a href="data.html#cb19-103" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data)) {</span>
+<span id="cb19-104"><a href="data.html#cb19-104" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span></span>
+<span id="cb19-105"><a href="data.html#cb19-105" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-106"><a href="data.html#cb19-106" tabindex="-1"></a>          <span class="at">data =</span> marginal.data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">0.5</span>),</span>
+<span id="cb19-107"><a href="data.html#cb19-107" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-108"><a href="data.html#cb19-108" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-109"><a href="data.html#cb19-109" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
+<span id="cb19-110"><a href="data.html#cb19-110" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
+<span id="cb19-111"><a href="data.html#cb19-111" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
+<span id="cb19-112"><a href="data.html#cb19-112" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb19-113"><a href="data.html#cb19-113" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-114"><a href="data.html#cb19-114" tabindex="-1"></a>          <span class="at">data =</span> marginal.data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&gt;=</span> <span class="sc">-</span><span class="fl">0.5</span>),</span>
+<span id="cb19-115"><a href="data.html#cb19-115" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-116"><a href="data.html#cb19-116" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-117"><a href="data.html#cb19-117" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
+<span id="cb19-118"><a href="data.html#cb19-118" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
+<span id="cb19-119"><a href="data.html#cb19-119" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
+<span id="cb19-120"><a href="data.html#cb19-120" tabindex="-1"></a>        )</span>
+<span id="cb19-121"><a href="data.html#cb19-121" tabindex="-1"></a>    }</span>
+<span id="cb19-122"><a href="data.html#cb19-122" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data2)) {</span>
+<span id="cb19-123"><a href="data.html#cb19-123" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span></span>
+<span id="cb19-124"><a href="data.html#cb19-124" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-125"><a href="data.html#cb19-125" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">0.5</span>),</span>
+<span id="cb19-126"><a href="data.html#cb19-126" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-127"><a href="data.html#cb19-127" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-128"><a href="data.html#cb19-128" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
+<span id="cb19-129"><a href="data.html#cb19-129" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
+<span id="cb19-130"><a href="data.html#cb19-130" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span></span>
+<span id="cb19-131"><a href="data.html#cb19-131" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb19-132"><a href="data.html#cb19-132" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-133"><a href="data.html#cb19-133" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x <span class="sc">&gt;=</span> <span class="sc">-</span><span class="fl">0.5</span>),</span>
+<span id="cb19-134"><a href="data.html#cb19-134" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-135"><a href="data.html#cb19-135" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-136"><a href="data.html#cb19-136" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
+<span id="cb19-137"><a href="data.html#cb19-137" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
+<span id="cb19-138"><a href="data.html#cb19-138" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span></span>
+<span id="cb19-139"><a href="data.html#cb19-139" tabindex="-1"></a>        )</span>
+<span id="cb19-140"><a href="data.html#cb19-140" tabindex="-1"></a>    }</span>
+<span id="cb19-141"><a href="data.html#cb19-141" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb19-142"><a href="data.html#cb19-142" tabindex="-1"></a>    plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-143"><a href="data.html#cb19-143" tabindex="-1"></a>      <span class="at">data =</span> com.frequency_delisting,</span>
+<span id="cb19-144"><a href="data.html#cb19-144" tabindex="-1"></a>      <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-145"><a href="data.html#cb19-145" tabindex="-1"></a>        <span class="at">x =</span> bin_centers, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(relative_frequency_delisting, scale, shift),</span>
+<span id="cb19-146"><a href="data.html#cb19-146" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
+<span id="cb19-147"><a href="data.html#cb19-147" tabindex="-1"></a>      )</span>
+<span id="cb19-148"><a href="data.html#cb19-148" tabindex="-1"></a>    )</span>
+<span id="cb19-149"><a href="data.html#cb19-149" tabindex="-1"></a></span>
+<span id="cb19-150"><a href="data.html#cb19-150" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data)) {</span>
+<span id="cb19-151"><a href="data.html#cb19-151" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span></span>
+<span id="cb19-152"><a href="data.html#cb19-152" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-153"><a href="data.html#cb19-153" tabindex="-1"></a>          <span class="at">data =</span> marginal.data,</span>
+<span id="cb19-154"><a href="data.html#cb19-154" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-155"><a href="data.html#cb19-155" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-156"><a href="data.html#cb19-156" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
+<span id="cb19-157"><a href="data.html#cb19-157" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend</span>
+<span id="cb19-158"><a href="data.html#cb19-158" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
+<span id="cb19-159"><a href="data.html#cb19-159" tabindex="-1"></a>        )</span>
+<span id="cb19-160"><a href="data.html#cb19-160" tabindex="-1"></a>    }</span>
+<span id="cb19-161"><a href="data.html#cb19-161" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(marginal.data2)) {</span>
+<span id="cb19-162"><a href="data.html#cb19-162" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">geom_smooth</span>(</span>
+<span id="cb19-163"><a href="data.html#cb19-163" tabindex="-1"></a>          <span class="at">data =</span> marginal.data2,</span>
+<span id="cb19-164"><a href="data.html#cb19-164" tabindex="-1"></a>          <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-165"><a href="data.html#cb19-165" tabindex="-1"></a>          <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb19-166"><a href="data.html#cb19-166" tabindex="-1"></a>            <span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">inv_scale_function</span>(yhat, scale, shift),</span>
+<span id="cb19-167"><a href="data.html#cb19-167" tabindex="-1"></a>            <span class="at">color =</span> marginal.legend2</span>
+<span id="cb19-168"><a href="data.html#cb19-168" tabindex="-1"></a>          ), <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span></span>
+<span id="cb19-169"><a href="data.html#cb19-169" tabindex="-1"></a>        )</span>
+<span id="cb19-170"><a href="data.html#cb19-170" tabindex="-1"></a>    }</span>
+<span id="cb19-171"><a href="data.html#cb19-171" tabindex="-1"></a>  }</span>
+<span id="cb19-172"><a href="data.html#cb19-172" tabindex="-1"></a></span>
+<span id="cb19-173"><a href="data.html#cb19-173" tabindex="-1"></a>  subtitle <span class="ot">&lt;-</span> <span class="fu">glue</span>(</span>
+<span id="cb19-174"><a href="data.html#cb19-174" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;gray&quot;]}&quot;&gt;**Absolute frequency (active and delisted)**&lt;/span&gt;, &#39;</span>,</span>
+<span id="cb19-175"><a href="data.html#cb19-175" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;orange&quot;]}&quot;&gt;**Relative delisting frequency**&lt;/span&gt;&#39;</span>,</span>
+<span id="cb19-176"><a href="data.html#cb19-176" tabindex="-1"></a>    <span class="fu">ifelse</span>(marginal.legend <span class="sc">==</span> <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">paste0</span>(<span class="st">&#39;, &lt;br&gt;&lt;span style=&quot;color:{colors[&quot;magenta&quot;]}&quot;&gt;**&#39;</span>, marginal.legend, <span class="st">&quot;**&lt;/span&gt;&quot;</span>)),</span>
+<span id="cb19-177"><a href="data.html#cb19-177" tabindex="-1"></a>    <span class="fu">ifelse</span>(marginal.legend2 <span class="sc">==</span> <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">paste0</span>(<span class="st">&#39;,&lt;br&gt;&lt;span style=&quot;color:{colors[&quot;lightblue&quot;]}&quot;&gt;**&#39;</span>, marginal.legend2, <span class="st">&quot;**&lt;/span&gt;&quot;</span>))</span>
+<span id="cb19-178"><a href="data.html#cb19-178" tabindex="-1"></a>  )</span>
+<span id="cb19-179"><a href="data.html#cb19-179" tabindex="-1"></a></span>
+<span id="cb19-180"><a href="data.html#cb19-180" tabindex="-1"></a>  plot <span class="ot">&lt;-</span> plot <span class="sc">+</span> <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb19-181"><a href="data.html#cb19-181" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Frequency&quot;</span>,</span>
+<span id="cb19-182"><a href="data.html#cb19-182" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(min_y_first, max_y_first),</span>
+<span id="cb19-183"><a href="data.html#cb19-183" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">sec_axis</span>(<span class="sc">~</span> <span class="fu">scale_function</span>(., scale, shift),</span>
+<span id="cb19-184"><a href="data.html#cb19-184" tabindex="-1"></a>      <span class="at">name =</span> <span class="st">&quot;Relative delisting frequency&quot;</span></span>
+<span id="cb19-185"><a href="data.html#cb19-185" tabindex="-1"></a>    ),</span>
+<span id="cb19-186"><a href="data.html#cb19-186" tabindex="-1"></a>    <span class="at">oob =</span> scales<span class="sc">::</span>rescale_none</span>
+<span id="cb19-187"><a href="data.html#cb19-187" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-188"><a href="data.html#cb19-188" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb19-189"><a href="data.html#cb19-189" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(</span>
+<span id="cb19-190"><a href="data.html#cb19-190" tabindex="-1"></a>      <span class="st">&quot;Absolute frequency&quot;</span>, <span class="co">#&quot;Absolute delisting frequency&quot;,</span></span>
+<span id="cb19-191"><a href="data.html#cb19-191" tabindex="-1"></a>      <span class="st">&quot;Relative delisting frequency&quot;</span>, marginal.legend, marginal.legend2</span>
+<span id="cb19-192"><a href="data.html#cb19-192" tabindex="-1"></a>    ),</span>
+<span id="cb19-193"><a href="data.html#cb19-193" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb19-194"><a href="data.html#cb19-194" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;gray&quot;</span>]),</span>
+<span id="cb19-195"><a href="data.html#cb19-195" tabindex="-1"></a>      <span class="co">#as.character(colors[&quot;blue&quot;]),</span></span>
+<span id="cb19-196"><a href="data.html#cb19-196" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>]),</span>
+<span id="cb19-197"><a href="data.html#cb19-197" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;magenta&quot;</span>]),</span>
+<span id="cb19-198"><a href="data.html#cb19-198" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;lightblue&quot;</span>])</span>
+<span id="cb19-199"><a href="data.html#cb19-199" tabindex="-1"></a>    )</span>
+<span id="cb19-200"><a href="data.html#cb19-200" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-201"><a href="data.html#cb19-201" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb19-202"><a href="data.html#cb19-202" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb19-203"><a href="data.html#cb19-203" tabindex="-1"></a>      <span class="st">&quot;Absolute frequency&quot;</span> <span class="ot">=</span> <span class="fu">as.character</span>(colors[<span class="st">&quot;gray&quot;</span>]),</span>
+<span id="cb19-204"><a href="data.html#cb19-204" tabindex="-1"></a>      <span class="co">#&quot;Absolute delisting frequency&quot; = as.character(colors[&quot;blue&quot;]),</span></span>
+<span id="cb19-205"><a href="data.html#cb19-205" tabindex="-1"></a>      <span class="st">&quot;Relative delisting frequency&quot;</span> <span class="ot">=</span> <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>]),</span>
+<span id="cb19-206"><a href="data.html#cb19-206" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;magenta&quot;</span>]),</span>
+<span id="cb19-207"><a href="data.html#cb19-207" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;lightblue&quot;</span>])</span>
+<span id="cb19-208"><a href="data.html#cb19-208" tabindex="-1"></a>    )</span>
+<span id="cb19-209"><a href="data.html#cb19-209" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-210"><a href="data.html#cb19-210" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-211"><a href="data.html#cb19-211" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">&quot;Histogram of &quot;</span>, feature_description),</span>
+<span id="cb19-212"><a href="data.html#cb19-212" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle,</span>
+<span id="cb19-213"><a href="data.html#cb19-213" tabindex="-1"></a>    <span class="at">x =</span> feature_identifier</span>
+<span id="cb19-214"><a href="data.html#cb19-214" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-215"><a href="data.html#cb19-215" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb19-216"><a href="data.html#cb19-216" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_markdown</span>(),</span>
+<span id="cb19-217"><a href="data.html#cb19-217" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_markdown</span>(<span class="at">color =</span> colors[<span class="st">&quot;gray&quot;</span>]),</span>
+<span id="cb19-218"><a href="data.html#cb19-218" tabindex="-1"></a>    <span class="at">axis.title.y.right =</span> <span class="fu">element_markdown</span>(<span class="at">color =</span> colors[<span class="st">&quot;orange&quot;</span>]),</span>
+<span id="cb19-219"><a href="data.html#cb19-219" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb19-220"><a href="data.html#cb19-220" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-221"><a href="data.html#cb19-221" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb19-222"><a href="data.html#cb19-222" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb19-223"><a href="data.html#cb19-223" tabindex="-1"></a>      <span class="at">x =</span> max_x, <span class="at">y =</span> max_y_first,</span>
+<span id="cb19-224"><a href="data.html#cb19-224" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">&quot;outliers are winsorized&quot;</span></span>
+<span id="cb19-225"><a href="data.html#cb19-225" tabindex="-1"></a>    ),</span>
+<span id="cb19-226"><a href="data.html#cb19-226" tabindex="-1"></a>    <span class="at">stat =</span> <span class="st">&quot;unique&quot;</span>,</span>
+<span id="cb19-227"><a href="data.html#cb19-227" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="dv">1</span>,</span>
+<span id="cb19-228"><a href="data.html#cb19-228" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb19-229"><a href="data.html#cb19-229" tabindex="-1"></a>  )</span>
+<span id="cb19-230"><a href="data.html#cb19-230" tabindex="-1"></a></span>
+<span id="cb19-231"><a href="data.html#cb19-231" tabindex="-1"></a>  <span class="fu">return</span>(plot)</span>
+<span id="cb19-232"><a href="data.html#cb19-232" tabindex="-1"></a>}</span>
+<span id="cb19-233"><a href="data.html#cb19-233" tabindex="-1"></a></span>
+<span id="cb19-234"><a href="data.html#cb19-234" tabindex="-1"></a><span class="co"># winsorize features</span></span>
+<span id="cb19-235"><a href="data.html#cb19-235" tabindex="-1"></a>com.winsorized <span class="ot">&lt;-</span> <span class="fu">data.prepare.winsorize</span>(com, com.features.fin<span class="sc">$</span>identifier,</span>
+<span id="cb19-236"><a href="data.html#cb19-236" tabindex="-1"></a>  <span class="at">lower_quantile_boundary =</span> <span class="fl">0.05</span>,</span>
+<span id="cb19-237"><a href="data.html#cb19-237" tabindex="-1"></a>  <span class="at">upper_quantile_boundary =</span> <span class="fl">0.95</span></span>
+<span id="cb19-238"><a href="data.html#cb19-238" tabindex="-1"></a>)</span>
+<span id="cb19-239"><a href="data.html#cb19-239" tabindex="-1"></a></span>
+<span id="cb19-240"><a href="data.html#cb19-240" tabindex="-1"></a><span class="co"># plot histogram of features and delisting frequency</span></span>
+<span id="cb19-241"><a href="data.html#cb19-241" tabindex="-1"></a>plots <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb19-242"><a href="data.html#cb19-242" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(com.features.fin<span class="sc">$</span>identifier)) {</span>
+<span id="cb19-243"><a href="data.html#cb19-243" tabindex="-1"></a>  feature_description <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">1</span>]]</span>
+<span id="cb19-244"><a href="data.html#cb19-244" tabindex="-1"></a>  feature_identifier <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">2</span>]]</span>
+<span id="cb19-245"><a href="data.html#cb19-245" tabindex="-1"></a></span>
+<span id="cb19-246"><a href="data.html#cb19-246" tabindex="-1"></a>  plots[[feature_identifier]] <span class="ot">&lt;-</span> <span class="fu">hist_delisting_frequency</span>(</span>
+<span id="cb19-247"><a href="data.html#cb19-247" tabindex="-1"></a>    com.winsorized <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">all_of</span>(feature_identifier), years_to_delisting),</span>
+<span id="cb19-248"><a href="data.html#cb19-248" tabindex="-1"></a>    feature_identifier,</span>
+<span id="cb19-249"><a href="data.html#cb19-249" tabindex="-1"></a>    feature_description</span>
+<span id="cb19-250"><a href="data.html#cb19-250" tabindex="-1"></a>  )</span>
+<span id="cb19-251"><a href="data.html#cb19-251" tabindex="-1"></a>  <span class="fu">print</span>(plots[[feature_identifier]])</span>
+<span id="cb19-252"><a href="data.html#cb19-252" tabindex="-1"></a>}</span></code></pre></div>
 <p><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-1.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-2.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-3.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-4.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-5.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-6.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-7.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-8.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-9.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-10.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-11.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-12.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-13.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-14.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-15.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-16.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-17.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-18.png" width="672" /><img src="_main_files/figure-html/features_distribution_delisting_frequency.function-19.png" width="672" /></p>
 <ul>
 <li><p>Capitalization and Solvency ratios - <strong>capital_ratio, de_ratio, debt_assets, debt_at</strong>: The higher the ratio of debt to assets or liabilities, the higher the relative delisting frequency in the subsequent year.</p></li>
@@ -1774,258 +1729,284 @@ margin ratios <code>opmad</code> and <code>opmbd</code> as well as the liquidity
 <span id="cb31-42"><a href="data.html#cb31-42" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb31-43"><a href="data.html#cb31-43" tabindex="-1"></a>    <span class="at">permno =</span> com<span class="sc">$</span>permno,</span>
 <span id="cb31-44"><a href="data.html#cb31-44" tabindex="-1"></a>    <span class="at">public_date =</span> com<span class="sc">$</span>public_date</span>
-<span id="cb31-45"><a href="data.html#cb31-45" tabindex="-1"></a>  )</span>
-<span id="cb31-46"><a href="data.html#cb31-46" tabindex="-1"></a></span>
-<span id="cb31-47"><a href="data.html#cb31-47" tabindex="-1"></a><span class="cf">if</span> (REBUILD_PREDICTOR_DATA_SET) {</span>
-<span id="cb31-48"><a href="data.html#cb31-48" tabindex="-1"></a>  <span class="co"># training set</span></span>
-<span id="cb31-49"><a href="data.html#cb31-49" tabindex="-1"></a>  data.training <span class="ot">&lt;-</span> <span class="fu">data.prepare</span>(</span>
-<span id="cb31-50"><a href="data.html#cb31-50" tabindex="-1"></a>    com.imputed <span class="sc">%&gt;%</span></span>
-<span id="cb31-51"><a href="data.html#cb31-51" tabindex="-1"></a>      <span class="fu">select</span>(permno, public_date, com.features.fin<span class="sc">$</span>identifier) <span class="sc">%&gt;%</span></span>
-<span id="cb31-52"><a href="data.html#cb31-52" tabindex="-1"></a>      <span class="fu">filter</span>(<span class="sc">!</span>test_indicator),</span>
-<span id="cb31-53"><a href="data.html#cb31-53" tabindex="-1"></a>    com.train,</span>
-<span id="cb31-54"><a href="data.html#cb31-54" tabindex="-1"></a>    macro.ratios,</span>
-<span id="cb31-55"><a href="data.html#cb31-55" tabindex="-1"></a>    com.features.fin<span class="sc">$</span>identifier</span>
-<span id="cb31-56"><a href="data.html#cb31-56" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">response =</span> <span class="fu">as.factor</span>(response))</span>
-<span id="cb31-57"><a href="data.html#cb31-57" tabindex="-1"></a>  <span class="fu">save</span>(data.training, <span class="at">file =</span> <span class="st">&quot;../data/data.training.RData&quot;</span>)</span>
-<span id="cb31-58"><a href="data.html#cb31-58" tabindex="-1"></a>  </span>
-<span id="cb31-59"><a href="data.html#cb31-59" tabindex="-1"></a>  <span class="co"># test set</span></span>
-<span id="cb31-60"><a href="data.html#cb31-60" tabindex="-1"></a>  data.test <span class="ot">&lt;-</span> <span class="fu">data.prepare</span>(</span>
-<span id="cb31-61"><a href="data.html#cb31-61" tabindex="-1"></a>    com.imputed <span class="sc">%&gt;%</span></span>
-<span id="cb31-62"><a href="data.html#cb31-62" tabindex="-1"></a>      <span class="fu">select</span>(permno, public_date, com.features.fin<span class="sc">$</span>identifier) <span class="sc">%&gt;%</span></span>
-<span id="cb31-63"><a href="data.html#cb31-63" tabindex="-1"></a>      <span class="fu">filter</span>(test_indicator),</span>
-<span id="cb31-64"><a href="data.html#cb31-64" tabindex="-1"></a>    com.test,</span>
-<span id="cb31-65"><a href="data.html#cb31-65" tabindex="-1"></a>    macro.ratios,</span>
-<span id="cb31-66"><a href="data.html#cb31-66" tabindex="-1"></a>    com.features.fin<span class="sc">$</span>identifier</span>
-<span id="cb31-67"><a href="data.html#cb31-67" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">response =</span> <span class="fu">as.factor</span>(response))</span>
-<span id="cb31-68"><a href="data.html#cb31-68" tabindex="-1"></a>  <span class="fu">save</span>(data.test, <span class="at">file =</span> <span class="st">&quot;../data/data.test.RData&quot;</span>)</span>
-<span id="cb31-69"><a href="data.html#cb31-69" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb31-70"><a href="data.html#cb31-70" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">&quot;../data/data.training.RData&quot;</span>)</span>
-<span id="cb31-71"><a href="data.html#cb31-71" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">&quot;../data/data.test.RData&quot;</span>)</span>
-<span id="cb31-72"><a href="data.html#cb31-72" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb31-45"><a href="data.html#cb31-45" tabindex="-1"></a>  )</span></code></pre></div>
+<pre><code>## 
+##  iter imp variable
+##   1   1  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   1   2  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   1   3  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   1   4  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   1   5  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   2   1  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   2   2  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   2   3  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   2   4  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   2   5  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   3   1  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   3   2  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   3   3  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   3   4  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   3   5  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   4   1  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   4   2  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   4   3  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   4   4  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   4   5  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   5   1  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   5   2  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   5   3  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   5   4  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn
+##   5   5  debt_assets  de_ratio  capital_ratio  aftret_eq  aftret_equity  roa  opmad  gpm  at_turn  pay_turn  roe  rect_turn  pe_exi  cash_ratio  curr_ratio  inv_turn</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1" tabindex="-1"></a><span class="cf">if</span> (REBUILD_PREDICTOR_DATA_SET) {</span>
+<span id="cb33-2"><a href="data.html#cb33-2" tabindex="-1"></a>  <span class="co"># training set</span></span>
+<span id="cb33-3"><a href="data.html#cb33-3" tabindex="-1"></a>  data.training <span class="ot">&lt;-</span> <span class="fu">data.prepare</span>(</span>
+<span id="cb33-4"><a href="data.html#cb33-4" tabindex="-1"></a>    com.imputed <span class="sc">%&gt;%</span></span>
+<span id="cb33-5"><a href="data.html#cb33-5" tabindex="-1"></a>      <span class="fu">select</span>(permno, public_date, com.features.fin<span class="sc">$</span>identifier) <span class="sc">%&gt;%</span></span>
+<span id="cb33-6"><a href="data.html#cb33-6" tabindex="-1"></a>      <span class="fu">filter</span>(<span class="sc">!</span>test_indicator),</span>
+<span id="cb33-7"><a href="data.html#cb33-7" tabindex="-1"></a>    com.train,</span>
+<span id="cb33-8"><a href="data.html#cb33-8" tabindex="-1"></a>    macro.ratios,</span>
+<span id="cb33-9"><a href="data.html#cb33-9" tabindex="-1"></a>    com.features.fin<span class="sc">$</span>identifier</span>
+<span id="cb33-10"><a href="data.html#cb33-10" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">response =</span> <span class="fu">as.factor</span>(response))</span>
+<span id="cb33-11"><a href="data.html#cb33-11" tabindex="-1"></a>  <span class="fu">save</span>(data.training, <span class="at">file =</span> <span class="st">&quot;../data/data.training.RData&quot;</span>)</span>
+<span id="cb33-12"><a href="data.html#cb33-12" tabindex="-1"></a>  </span>
+<span id="cb33-13"><a href="data.html#cb33-13" tabindex="-1"></a>  <span class="co"># test set</span></span>
+<span id="cb33-14"><a href="data.html#cb33-14" tabindex="-1"></a>  data.test <span class="ot">&lt;-</span> <span class="fu">data.prepare</span>(</span>
+<span id="cb33-15"><a href="data.html#cb33-15" tabindex="-1"></a>    com.imputed <span class="sc">%&gt;%</span></span>
+<span id="cb33-16"><a href="data.html#cb33-16" tabindex="-1"></a>      <span class="fu">select</span>(permno, public_date, com.features.fin<span class="sc">$</span>identifier) <span class="sc">%&gt;%</span></span>
+<span id="cb33-17"><a href="data.html#cb33-17" tabindex="-1"></a>      <span class="fu">filter</span>(test_indicator),</span>
+<span id="cb33-18"><a href="data.html#cb33-18" tabindex="-1"></a>    com.test,</span>
+<span id="cb33-19"><a href="data.html#cb33-19" tabindex="-1"></a>    macro.ratios,</span>
+<span id="cb33-20"><a href="data.html#cb33-20" tabindex="-1"></a>    com.features.fin<span class="sc">$</span>identifier</span>
+<span id="cb33-21"><a href="data.html#cb33-21" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">response =</span> <span class="fu">as.factor</span>(response))</span>
+<span id="cb33-22"><a href="data.html#cb33-22" tabindex="-1"></a>  <span class="fu">save</span>(data.test, <span class="at">file =</span> <span class="st">&quot;../data/data.test.RData&quot;</span>)</span>
+<span id="cb33-23"><a href="data.html#cb33-23" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb33-24"><a href="data.html#cb33-24" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">&quot;../data/data.training.RData&quot;</span>)</span>
+<span id="cb33-25"><a href="data.html#cb33-25" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">&quot;../data/data.test.RData&quot;</span>)</span>
+<span id="cb33-26"><a href="data.html#cb33-26" tabindex="-1"></a>}</span></code></pre></div>
 <p>Test historical features of predictor data set for coherence by choosing random sample row
 
 <div class="testrmd-badge-container-outer">
   <div class="testrmd-badge-container-inner">
-      <span class="testrmd-badge label label-info" data-toggle="collapse" data-target="#testrmd-chunk-4327947" aria-expanded="false" aria-controls="testrmd-chunk-4327947">Tests passed</span>
+      <span class="testrmd-badge label label-info" data-toggle="collapse" data-target="#testrmd-chunk-5291339" aria-expanded="false" aria-controls="testrmd-chunk-5291339">Tests passed</span>
   </div>
 </div>
-<div id="testrmd-chunk-4327947" class="testrmd-chunk panel panel-info collapse">
+<div id="testrmd-chunk-5291339" class="testrmd-chunk panel panel-info collapse">
   <div class="panel-heading">
 </p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="data.html#cb32-1" tabindex="-1"></a>data.sample <span class="ot">&lt;-</span> data.training[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(data.training), <span class="at">size =</span> <span class="dv">1</span>), ]</span>
-<span id="cb32-2"><a href="data.html#cb32-2" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="data.html#cb32-3" tabindex="-1"></a>data.sample.history <span class="ot">&lt;-</span> com <span class="sc">%&gt;%</span></span>
-<span id="cb32-4"><a href="data.html#cb32-4" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb32-5"><a href="data.html#cb32-5" tabindex="-1"></a>    permno <span class="sc">==</span> data.sample<span class="sc">$</span>permno,</span>
-<span id="cb32-6"><a href="data.html#cb32-6" tabindex="-1"></a>    data.sample<span class="sc">$</span>public_date <span class="sc">-</span> <span class="fu">years</span>(<span class="dv">5</span>) <span class="sc">&lt;=</span> public_date <span class="sc">&amp;</span></span>
-<span id="cb32-7"><a href="data.html#cb32-7" tabindex="-1"></a>      public_date <span class="sc">&lt;=</span> data.sample<span class="sc">$</span>public_date</span>
-<span id="cb32-8"><a href="data.html#cb32-8" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb32-9"><a href="data.html#cb32-9" tabindex="-1"></a>  <span class="fu">select</span>(public_date, capital_ratio)</span>
-<span id="cb32-10"><a href="data.html#cb32-10" tabindex="-1"></a>data.sample.history.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(capital_ratio <span class="sc">~</span> public_date, <span class="at">data =</span> data.sample.history)</span>
-<span id="cb32-11"><a href="data.html#cb32-11" tabindex="-1"></a></span>
-<span id="cb32-12"><a href="data.html#cb32-12" tabindex="-1"></a><span class="co"># ggplot(data = data.sample.history, aes(public_date, capital_ratio)) +</span></span>
-<span id="cb32-13"><a href="data.html#cb32-13" tabindex="-1"></a><span class="co">#   geom_point() +</span></span>
-<span id="cb32-14"><a href="data.html#cb32-14" tabindex="-1"></a><span class="co">#   geom_abline(slope = data.sample.history.lm$coefficients[2],</span></span>
-<span id="cb32-15"><a href="data.html#cb32-15" tabindex="-1"></a><span class="co">#               intercept = data.sample.history.lm$coefficients[1]) +</span></span>
-<span id="cb32-16"><a href="data.html#cb32-16" tabindex="-1"></a><span class="co">#   labs(</span></span>
-<span id="cb32-17"><a href="data.html#cb32-17" tabindex="-1"></a><span class="co">#     title = &quot;Scatterplot: Capital ratio vs. public report date&quot;,</span></span>
-<span id="cb32-18"><a href="data.html#cb32-18" tabindex="-1"></a><span class="co">#     subtitle = &quot;Company with firm_id 81282&quot;,</span></span>
-<span id="cb32-19"><a href="data.html#cb32-19" tabindex="-1"></a><span class="co">#     x = &quot;public report date&quot;,</span></span>
-<span id="cb32-20"><a href="data.html#cb32-20" tabindex="-1"></a><span class="co">#     y = &quot;captial ratio&quot;</span></span>
-<span id="cb32-21"><a href="data.html#cb32-21" tabindex="-1"></a><span class="co">#   )</span></span>
-<span id="cb32-22"><a href="data.html#cb32-22" tabindex="-1"></a></span>
-<span id="cb32-23"><a href="data.html#cb32-23" tabindex="-1"></a><span class="fu">expect_true</span>(data.sample<span class="sc">$</span>capital_ratio_h <span class="sc">==</span> data.sample.history.lm<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="data.html#cb34-1" tabindex="-1"></a>data.sample <span class="ot">&lt;-</span> data.training[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(data.training), <span class="at">size =</span> <span class="dv">1</span>), ]</span>
+<span id="cb34-2"><a href="data.html#cb34-2" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="data.html#cb34-3" tabindex="-1"></a>data.sample.history <span class="ot">&lt;-</span> com <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="data.html#cb34-4" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb34-5"><a href="data.html#cb34-5" tabindex="-1"></a>    permno <span class="sc">==</span> data.sample<span class="sc">$</span>permno,</span>
+<span id="cb34-6"><a href="data.html#cb34-6" tabindex="-1"></a>    data.sample<span class="sc">$</span>public_date <span class="sc">-</span> <span class="fu">years</span>(<span class="dv">5</span>) <span class="sc">&lt;=</span> public_date <span class="sc">&amp;</span></span>
+<span id="cb34-7"><a href="data.html#cb34-7" tabindex="-1"></a>      public_date <span class="sc">&lt;=</span> data.sample<span class="sc">$</span>public_date</span>
+<span id="cb34-8"><a href="data.html#cb34-8" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb34-9"><a href="data.html#cb34-9" tabindex="-1"></a>  <span class="fu">select</span>(public_date, capital_ratio)</span>
+<span id="cb34-10"><a href="data.html#cb34-10" tabindex="-1"></a>data.sample.history.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(capital_ratio <span class="sc">~</span> public_date, <span class="at">data =</span> data.sample.history)</span>
+<span id="cb34-11"><a href="data.html#cb34-11" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="data.html#cb34-12" tabindex="-1"></a><span class="co"># ggplot(data = data.sample.history, aes(public_date, capital_ratio)) +</span></span>
+<span id="cb34-13"><a href="data.html#cb34-13" tabindex="-1"></a><span class="co">#   geom_point() +</span></span>
+<span id="cb34-14"><a href="data.html#cb34-14" tabindex="-1"></a><span class="co">#   geom_abline(slope = data.sample.history.lm$coefficients[2],</span></span>
+<span id="cb34-15"><a href="data.html#cb34-15" tabindex="-1"></a><span class="co">#               intercept = data.sample.history.lm$coefficients[1]) +</span></span>
+<span id="cb34-16"><a href="data.html#cb34-16" tabindex="-1"></a><span class="co">#   labs(</span></span>
+<span id="cb34-17"><a href="data.html#cb34-17" tabindex="-1"></a><span class="co">#     title = &quot;Scatterplot: Capital ratio vs. public report date&quot;,</span></span>
+<span id="cb34-18"><a href="data.html#cb34-18" tabindex="-1"></a><span class="co">#     subtitle = &quot;Company with firm_id 81282&quot;,</span></span>
+<span id="cb34-19"><a href="data.html#cb34-19" tabindex="-1"></a><span class="co">#     x = &quot;public report date&quot;,</span></span>
+<span id="cb34-20"><a href="data.html#cb34-20" tabindex="-1"></a><span class="co">#     y = &quot;captial ratio&quot;</span></span>
+<span id="cb34-21"><a href="data.html#cb34-21" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb34-22"><a href="data.html#cb34-22" tabindex="-1"></a></span>
+<span id="cb34-23"><a href="data.html#cb34-23" tabindex="-1"></a><span class="fu">expect_true</span>(data.sample<span class="sc">$</span>capital_ratio_h <span class="sc">==</span> data.sample.history.lm<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span></code></pre></div>
 </div>
 </div>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb33-2"><a href="data.html#cb33-2" tabindex="-1"></a>  <span class="st">&quot;Total number of companies:&quot;</span>,</span>
-<span id="cb33-3"><a href="data.html#cb33-3" tabindex="-1"></a>  com.quarters_per_company <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
-<span id="cb33-4"><a href="data.html#cb33-4" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Total number of companies: 9424&quot;</code></pre>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="data.html#cb35-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb35-2"><a href="data.html#cb35-2" tabindex="-1"></a>  <span class="st">&quot;Number of delisted companies:&quot;</span>,</span>
-<span id="cb35-3"><a href="data.html#cb35-3" tabindex="-1"></a>  com <span class="sc">%&gt;%</span> <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
+<span id="cb35-2"><a href="data.html#cb35-2" tabindex="-1"></a>  <span class="st">&quot;Total number of companies:&quot;</span>,</span>
+<span id="cb35-3"><a href="data.html#cb35-3" tabindex="-1"></a>  com.quarters_per_company <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
 <span id="cb35-4"><a href="data.html#cb35-4" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Number of delisted companies: 5417&quot;</code></pre>
+<pre><code>## [1] &quot;Total number of companies: 9424&quot;</code></pre>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="data.html#cb37-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb37-2"><a href="data.html#cb37-2" tabindex="-1"></a>  <span class="st">&quot;Total number of companies w/ at least five quarters:&quot;</span>,</span>
-<span id="cb37-3"><a href="data.html#cb37-3" tabindex="-1"></a>  com <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
+<span id="cb37-2"><a href="data.html#cb37-2" tabindex="-1"></a>  <span class="st">&quot;Number of delisted companies:&quot;</span>,</span>
+<span id="cb37-3"><a href="data.html#cb37-3" tabindex="-1"></a>  com <span class="sc">%&gt;%</span> <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
 <span id="cb37-4"><a href="data.html#cb37-4" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Total number of companies w/ at least five quarters: 8870&quot;</code></pre>
+<pre><code>## [1] &quot;Number of delisted companies: 5417&quot;</code></pre>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="data.html#cb39-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb39-2"><a href="data.html#cb39-2" tabindex="-1"></a>  <span class="st">&quot;Proportion of delisted companies:&quot;</span>,</span>
-<span id="cb39-3"><a href="data.html#cb39-3" tabindex="-1"></a>  <span class="fu">formatC</span>(com <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>event_group <span class="sc">%in%</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">/</span></span>
-<span id="cb39-4"><a href="data.html#cb39-4" tabindex="-1"></a>    com <span class="sc">%&gt;%</span></span>
-<span id="cb39-5"><a href="data.html#cb39-5" tabindex="-1"></a>      <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
-<span id="cb39-6"><a href="data.html#cb39-6" tabindex="-1"></a>      <span class="fu">count</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb39-7"><a href="data.html#cb39-7" tabindex="-1"></a>      <span class="fu">nrow</span>(), <span class="at">digits =</span> <span class="dv">4</span>)</span>
-<span id="cb39-8"><a href="data.html#cb39-8" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Proportion of delisted companies: 0.6107&quot;</code></pre>
+<span id="cb39-2"><a href="data.html#cb39-2" tabindex="-1"></a>  <span class="st">&quot;Total number of companies w/ at least five quarters:&quot;</span>,</span>
+<span id="cb39-3"><a href="data.html#cb39-3" tabindex="-1"></a>  com <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
+<span id="cb39-4"><a href="data.html#cb39-4" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## [1] &quot;Total number of companies w/ at least five quarters: 8870&quot;</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="data.html#cb41-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb41-2"><a href="data.html#cb41-2" tabindex="-1"></a>  <span class="st">&quot;Median number of years of financial ratios for active companies:&quot;</span>,</span>
-<span id="cb41-3"><a href="data.html#cb41-3" tabindex="-1"></a>  (com <span class="sc">%&gt;%</span></span>
-<span id="cb41-4"><a href="data.html#cb41-4" tabindex="-1"></a>    <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb41-5"><a href="data.html#cb41-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">n_active_years =</span> <span class="fu">time_length</span>(<span class="fu">interval</span>(begdat, LAST_TRADING_DATE_AVAILABLE), <span class="st">&quot;year&quot;</span>)))<span class="sc">$</span>n_active_years <span class="sc">%&gt;%</span></span>
-<span id="cb41-6"><a href="data.html#cb41-6" tabindex="-1"></a>    <span class="fu">median</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb41-7"><a href="data.html#cb41-7" tabindex="-1"></a>    <span class="fu">formatC</span>(., <span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb41-2"><a href="data.html#cb41-2" tabindex="-1"></a>  <span class="st">&quot;Proportion of delisted companies:&quot;</span>,</span>
+<span id="cb41-3"><a href="data.html#cb41-3" tabindex="-1"></a>  <span class="fu">formatC</span>(com <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>event_group <span class="sc">%in%</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">/</span></span>
+<span id="cb41-4"><a href="data.html#cb41-4" tabindex="-1"></a>    com <span class="sc">%&gt;%</span></span>
+<span id="cb41-5"><a href="data.html#cb41-5" tabindex="-1"></a>      <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
+<span id="cb41-6"><a href="data.html#cb41-6" tabindex="-1"></a>      <span class="fu">count</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb41-7"><a href="data.html#cb41-7" tabindex="-1"></a>      <span class="fu">nrow</span>(), <span class="at">digits =</span> <span class="dv">4</span>)</span>
 <span id="cb41-8"><a href="data.html#cb41-8" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## [1] &quot;Proportion of delisted companies: 0.6107&quot;</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="data.html#cb43-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
+<span id="cb43-2"><a href="data.html#cb43-2" tabindex="-1"></a>  <span class="st">&quot;Median number of years of financial ratios for active companies:&quot;</span>,</span>
+<span id="cb43-3"><a href="data.html#cb43-3" tabindex="-1"></a>  (com <span class="sc">%&gt;%</span></span>
+<span id="cb43-4"><a href="data.html#cb43-4" tabindex="-1"></a>    <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb43-5"><a href="data.html#cb43-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">n_active_years =</span> <span class="fu">time_length</span>(<span class="fu">interval</span>(begdat, LAST_TRADING_DATE_AVAILABLE), <span class="st">&quot;year&quot;</span>)))<span class="sc">$</span>n_active_years <span class="sc">%&gt;%</span></span>
+<span id="cb43-6"><a href="data.html#cb43-6" tabindex="-1"></a>    <span class="fu">median</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb43-7"><a href="data.html#cb43-7" tabindex="-1"></a>    <span class="fu">formatC</span>(., <span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb43-8"><a href="data.html#cb43-8" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## [1] &quot;Median number of years of financial ratios for active companies: 28.89&quot;</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="data.html#cb43-1" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">&quot;Proportion of companies in train set:&quot;</span>, <span class="fu">formatC</span>(<span class="fu">nrow</span>(data.training) <span class="sc">/</span></span>
-<span id="cb43-2"><a href="data.html#cb43-2" tabindex="-1"></a>  (<span class="fu">nrow</span>(data.training) <span class="sc">+</span> <span class="fu">nrow</span>(data.test)), <span class="at">digits =</span> <span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="data.html#cb45-1" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">&quot;Proportion of companies in train set:&quot;</span>, <span class="fu">formatC</span>(<span class="fu">nrow</span>(data.training) <span class="sc">/</span></span>
+<span id="cb45-2"><a href="data.html#cb45-2" tabindex="-1"></a>  (<span class="fu">nrow</span>(data.training) <span class="sc">+</span> <span class="fu">nrow</span>(data.test)), <span class="at">digits =</span> <span class="dv">2</span>))</span></code></pre></div>
 <pre><code>## [1] &quot;Proportion of companies in train set: 0.75&quot;</code></pre>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="data.html#cb45-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb45-2"><a href="data.html#cb45-2" tabindex="-1"></a>  <span class="st">&quot;Number of companies in train set:&quot;</span>,</span>
-<span id="cb45-3"><a href="data.html#cb45-3" tabindex="-1"></a>  data.training <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
-<span id="cb45-4"><a href="data.html#cb45-4" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Number of companies in train set: 6652&quot;</code></pre>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="data.html#cb47-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb47-2"><a href="data.html#cb47-2" tabindex="-1"></a>  <span class="st">&quot;Number of delisted companies in train set:&quot;</span>,</span>
-<span id="cb47-3"><a href="data.html#cb47-3" tabindex="-1"></a>  data.training <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
+<span id="cb47-2"><a href="data.html#cb47-2" tabindex="-1"></a>  <span class="st">&quot;Number of companies in train set:&quot;</span>,</span>
+<span id="cb47-3"><a href="data.html#cb47-3" tabindex="-1"></a>  data.training <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
 <span id="cb47-4"><a href="data.html#cb47-4" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Number of delisted companies in train set: 1409&quot;</code></pre>
+<pre><code>## [1] &quot;Number of companies in train set: 6652&quot;</code></pre>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="data.html#cb49-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb49-2"><a href="data.html#cb49-2" tabindex="-1"></a>  <span class="st">&quot;Number of active companies in train set:&quot;</span>,</span>
-<span id="cb49-3"><a href="data.html#cb49-3" tabindex="-1"></a>  data.training <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
+<span id="cb49-2"><a href="data.html#cb49-2" tabindex="-1"></a>  <span class="st">&quot;Number of delisted companies in train set:&quot;</span>,</span>
+<span id="cb49-3"><a href="data.html#cb49-3" tabindex="-1"></a>  data.training <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
 <span id="cb49-4"><a href="data.html#cb49-4" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Number of active companies in train set: 5243&quot;</code></pre>
+<pre><code>## [1] &quot;Number of delisted companies in train set: 1409&quot;</code></pre>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="data.html#cb51-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb51-2"><a href="data.html#cb51-2" tabindex="-1"></a>  <span class="st">&quot;Proportion of delisted responses in train set:&quot;</span>,</span>
-<span id="cb51-3"><a href="data.html#cb51-3" tabindex="-1"></a>  <span class="fu">formatC</span>(data.training <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">/</span></span>
-<span id="cb51-4"><a href="data.html#cb51-4" tabindex="-1"></a>    data.training <span class="sc">%&gt;%</span></span>
-<span id="cb51-5"><a href="data.html#cb51-5" tabindex="-1"></a>      <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
-<span id="cb51-6"><a href="data.html#cb51-6" tabindex="-1"></a>      <span class="fu">count</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb51-7"><a href="data.html#cb51-7" tabindex="-1"></a>      <span class="fu">nrow</span>(), <span class="at">digits =</span> <span class="dv">4</span>)</span>
-<span id="cb51-8"><a href="data.html#cb51-8" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Proportion of delisted responses in train set: 0.2118&quot;</code></pre>
+<span id="cb51-2"><a href="data.html#cb51-2" tabindex="-1"></a>  <span class="st">&quot;Number of active companies in train set:&quot;</span>,</span>
+<span id="cb51-3"><a href="data.html#cb51-3" tabindex="-1"></a>  data.training <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span>
+<span id="cb51-4"><a href="data.html#cb51-4" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## [1] &quot;Number of active companies in train set: 5243&quot;</code></pre>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="data.html#cb53-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb53-2"><a href="data.html#cb53-2" tabindex="-1"></a>  <span class="st">&quot;Proportion of delisted responses in test set:&quot;</span>,</span>
-<span id="cb53-3"><a href="data.html#cb53-3" tabindex="-1"></a>  <span class="fu">formatC</span>(data.test <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">/</span></span>
-<span id="cb53-4"><a href="data.html#cb53-4" tabindex="-1"></a>    data.test <span class="sc">%&gt;%</span></span>
+<span id="cb53-2"><a href="data.html#cb53-2" tabindex="-1"></a>  <span class="st">&quot;Proportion of delisted responses in train set:&quot;</span>,</span>
+<span id="cb53-3"><a href="data.html#cb53-3" tabindex="-1"></a>  <span class="fu">formatC</span>(data.training <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">/</span></span>
+<span id="cb53-4"><a href="data.html#cb53-4" tabindex="-1"></a>    data.training <span class="sc">%&gt;%</span></span>
 <span id="cb53-5"><a href="data.html#cb53-5" tabindex="-1"></a>      <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
 <span id="cb53-6"><a href="data.html#cb53-6" tabindex="-1"></a>      <span class="fu">count</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb53-7"><a href="data.html#cb53-7" tabindex="-1"></a>      <span class="fu">nrow</span>(), <span class="at">digits =</span> <span class="dv">4</span>)</span>
 <span id="cb53-8"><a href="data.html#cb53-8" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## [1] &quot;Proportion of delisted responses in test set: 0.1966&quot;</code></pre>
+<pre><code>## [1] &quot;Proportion of delisted responses in train set: 0.2118&quot;</code></pre>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="data.html#cb55-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
-<span id="cb55-2"><a href="data.html#cb55-2" tabindex="-1"></a>  <span class="st">&quot;Median number of years of financial ratios for active companies in train set:&quot;</span>,</span>
-<span id="cb55-3"><a href="data.html#cb55-3" tabindex="-1"></a>  <span class="fu">formatC</span>((data.training <span class="sc">%&gt;%</span></span>
-<span id="cb55-4"><a href="data.html#cb55-4" tabindex="-1"></a>    <span class="fu">left_join</span>(com, <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)) <span class="sc">%&gt;%</span></span>
-<span id="cb55-5"><a href="data.html#cb55-5" tabindex="-1"></a>    <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb55-6"><a href="data.html#cb55-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">n_active_years =</span> <span class="fu">time_length</span>(<span class="fu">interval</span>(begdat, public_date), <span class="st">&quot;year&quot;</span>)))<span class="sc">$</span>n_active_years <span class="sc">%&gt;%</span></span>
-<span id="cb55-7"><a href="data.html#cb55-7" tabindex="-1"></a>    <span class="fu">median</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb55-2"><a href="data.html#cb55-2" tabindex="-1"></a>  <span class="st">&quot;Proportion of delisted responses in test set:&quot;</span>,</span>
+<span id="cb55-3"><a href="data.html#cb55-3" tabindex="-1"></a>  <span class="fu">formatC</span>(data.test <span class="sc">%&gt;%</span> <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span> <span class="fu">count</span>() <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">/</span></span>
+<span id="cb55-4"><a href="data.html#cb55-4" tabindex="-1"></a>    data.test <span class="sc">%&gt;%</span></span>
+<span id="cb55-5"><a href="data.html#cb55-5" tabindex="-1"></a>      <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
+<span id="cb55-6"><a href="data.html#cb55-6" tabindex="-1"></a>      <span class="fu">count</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb55-7"><a href="data.html#cb55-7" tabindex="-1"></a>      <span class="fu">nrow</span>(), <span class="at">digits =</span> <span class="dv">4</span>)</span>
 <span id="cb55-8"><a href="data.html#cb55-8" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## [1] &quot;Proportion of delisted responses in test set: 0.1966&quot;</code></pre>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="data.html#cb57-1" tabindex="-1"></a><span class="fu">paste</span>(</span>
+<span id="cb57-2"><a href="data.html#cb57-2" tabindex="-1"></a>  <span class="st">&quot;Median number of years of financial ratios for active companies in train set:&quot;</span>,</span>
+<span id="cb57-3"><a href="data.html#cb57-3" tabindex="-1"></a>  <span class="fu">formatC</span>((data.training <span class="sc">%&gt;%</span></span>
+<span id="cb57-4"><a href="data.html#cb57-4" tabindex="-1"></a>    <span class="fu">left_join</span>(com, <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)) <span class="sc">%&gt;%</span></span>
+<span id="cb57-5"><a href="data.html#cb57-5" tabindex="-1"></a>    <span class="fu">filter</span>(response <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb57-6"><a href="data.html#cb57-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">n_active_years =</span> <span class="fu">time_length</span>(<span class="fu">interval</span>(begdat, public_date), <span class="st">&quot;year&quot;</span>)))<span class="sc">$</span>n_active_years <span class="sc">%&gt;%</span></span>
+<span id="cb57-7"><a href="data.html#cb57-7" tabindex="-1"></a>    <span class="fu">median</span>(., <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb57-8"><a href="data.html#cb57-8" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## [1] &quot;Median number of years of financial ratios for active companies in train set: 3.923&quot;</code></pre>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="data.html#cb57-1" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">&quot;Are there missing cells in train set? -&quot;</span>, <span class="fu">any</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(data.training)) <span class="sc">&gt;</span> <span class="dv">0</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="data.html#cb59-1" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">&quot;Are there missing cells in train set? -&quot;</span>, <span class="fu">any</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(data.training)) <span class="sc">&gt;</span> <span class="dv">0</span>))</span></code></pre></div>
 <pre><code>## [1] &quot;Are there missing cells in train set? - FALSE&quot;</code></pre>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="data.html#cb59-1" tabindex="-1"></a><span class="co"># sampled time points of financial ratios of active companies</span></span>
-<span id="cb59-2"><a href="data.html#cb59-2" tabindex="-1"></a>com.active.years <span class="ot">&lt;-</span> com.time_points.sample <span class="sc">%&gt;%</span></span>
-<span id="cb59-3"><a href="data.html#cb59-3" tabindex="-1"></a>  <span class="fu">left_join</span>(com, <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)) <span class="sc">%&gt;%</span></span>
-<span id="cb59-4"><a href="data.html#cb59-4" tabindex="-1"></a>  <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb59-5"><a href="data.html#cb59-5" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(public_date, <span class="st">&quot;year&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb59-6"><a href="data.html#cb59-6" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">number_of_companies =</span> <span class="fu">n</span>())</span>
-<span id="cb59-7"><a href="data.html#cb59-7" tabindex="-1"></a></span>
-<span id="cb59-8"><a href="data.html#cb59-8" tabindex="-1"></a>com.active.frequency <span class="ot">&lt;-</span> com <span class="sc">%&gt;%</span></span>
-<span id="cb59-9"><a href="data.html#cb59-9" tabindex="-1"></a>  <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb59-10"><a href="data.html#cb59-10" tabindex="-1"></a>  <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
-<span id="cb59-11"><a href="data.html#cb59-11" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb59-12"><a href="data.html#cb59-12" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb59-13"><a href="data.html#cb59-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(<span class="fu">ymd</span>(enddat), <span class="st">&quot;year&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb59-14"><a href="data.html#cb59-14" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
-<span id="cb59-15"><a href="data.html#cb59-15" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb59-16"><a href="data.html#cb59-16" tabindex="-1"></a>    <span class="at">number_of_delistings =</span> <span class="fu">n</span>(),</span>
-<span id="cb59-17"><a href="data.html#cb59-17" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
-<span id="cb59-18"><a href="data.html#cb59-18" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb59-19"><a href="data.html#cb59-19" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb59-20"><a href="data.html#cb59-20" tabindex="-1"></a>    <span class="at">proportion_wanted =</span> number_of_delistings <span class="sc">/</span> <span class="fu">sum</span>(number_of_delistings)</span>
-<span id="cb59-21"><a href="data.html#cb59-21" tabindex="-1"></a>  )</span>
-<span id="cb59-22"><a href="data.html#cb59-22" tabindex="-1"></a></span>
-<span id="cb59-23"><a href="data.html#cb59-23" tabindex="-1"></a>com.active.begdat <span class="ot">&lt;-</span> com.time_points.sample <span class="sc">%&gt;%</span></span>
-<span id="cb59-24"><a href="data.html#cb59-24" tabindex="-1"></a>  <span class="fu">left_join</span>(com, <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)) <span class="sc">%&gt;%</span></span>
-<span id="cb59-25"><a href="data.html#cb59-25" tabindex="-1"></a>  <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb59-26"><a href="data.html#cb59-26" tabindex="-1"></a>  <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
-<span id="cb59-27"><a href="data.html#cb59-27" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb59-28"><a href="data.html#cb59-28" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb59-29"><a href="data.html#cb59-29" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(begdat, <span class="st">&quot;year&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb59-30"><a href="data.html#cb59-30" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">number_of_companies =</span> <span class="fu">n</span>())</span>
-<span id="cb59-31"><a href="data.html#cb59-31" tabindex="-1"></a></span>
-<span id="cb59-32"><a href="data.html#cb59-32" tabindex="-1"></a>subtitle <span class="ot">&lt;-</span> <span class="fu">glue</span>(</span>
-<span id="cb59-33"><a href="data.html#cb59-33" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;blue&quot;]}&quot;&gt;**Number of companies by begdat**&lt;/span&gt;, &#39;</span>,</span>
-<span id="cb59-34"><a href="data.html#cb59-34" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;orange&quot;]}&quot;&gt;**number of companies by public_date**&lt;/span&gt;,&lt;br&gt;&#39;</span>,</span>
-<span id="cb59-35"><a href="data.html#cb59-35" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;magenta&quot;]}&quot;&gt;**ideal number of companies proportional to delisting**&lt;/span&gt;&#39;</span></span>
-<span id="cb59-36"><a href="data.html#cb59-36" tabindex="-1"></a>  )</span>
-<span id="cb59-37"><a href="data.html#cb59-37" tabindex="-1"></a></span>
-<span id="cb59-38"><a href="data.html#cb59-38" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb59-39"><a href="data.html#cb59-39" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb59-40"><a href="data.html#cb59-40" tabindex="-1"></a>    <span class="at">data =</span> com.active.years,</span>
-<span id="cb59-41"><a href="data.html#cb59-41" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> number_of_companies, <span class="at">color =</span> <span class="st">&quot;# companies by public_date&quot;</span>),</span>
-<span id="cb59-42"><a href="data.html#cb59-42" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
-<span id="cb59-43"><a href="data.html#cb59-43" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb59-44"><a href="data.html#cb59-44" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb59-45"><a href="data.html#cb59-45" tabindex="-1"></a>    <span class="at">data =</span> com.active.frequency,</span>
-<span id="cb59-46"><a href="data.html#cb59-46" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb59-47"><a href="data.html#cb59-47" tabindex="-1"></a>      <span class="at">x =</span> year, <span class="at">y =</span> proportion_wanted <span class="sc">*</span> <span class="fu">sum</span>(com.active.years<span class="sc">$</span>number_of_companies),</span>
-<span id="cb59-48"><a href="data.html#cb59-48" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;ideal # companies proportional to delisting&quot;</span></span>
-<span id="cb59-49"><a href="data.html#cb59-49" tabindex="-1"></a>    ),</span>
-<span id="cb59-50"><a href="data.html#cb59-50" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
-<span id="cb59-51"><a href="data.html#cb59-51" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb59-52"><a href="data.html#cb59-52" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb59-53"><a href="data.html#cb59-53" tabindex="-1"></a>    <span class="at">data =</span> com.active.begdat,</span>
-<span id="cb59-54"><a href="data.html#cb59-54" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> number_of_companies, <span class="at">color =</span> <span class="st">&quot;# companies by begdat&quot;</span>),</span>
-<span id="cb59-55"><a href="data.html#cb59-55" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
-<span id="cb59-56"><a href="data.html#cb59-56" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb59-57"><a href="data.html#cb59-57" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
-<span id="cb59-58"><a href="data.html#cb59-58" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(</span>
-<span id="cb59-59"><a href="data.html#cb59-59" tabindex="-1"></a>      <span class="st">&quot;# companies by begdat&quot;</span>, <span class="st">&quot;# companies by public_date&quot;</span>,</span>
-<span id="cb59-60"><a href="data.html#cb59-60" tabindex="-1"></a>      <span class="st">&quot;ideal # companies proportional to delisting&quot;</span></span>
-<span id="cb59-61"><a href="data.html#cb59-61" tabindex="-1"></a>    ),</span>
-<span id="cb59-62"><a href="data.html#cb59-62" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
-<span id="cb59-63"><a href="data.html#cb59-63" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;blue&quot;</span>]),</span>
-<span id="cb59-64"><a href="data.html#cb59-64" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>]),</span>
-<span id="cb59-65"><a href="data.html#cb59-65" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;magenta&quot;</span>])</span>
-<span id="cb59-66"><a href="data.html#cb59-66" tabindex="-1"></a>    )</span>
-<span id="cb59-67"><a href="data.html#cb59-67" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb59-68"><a href="data.html#cb59-68" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb59-69"><a href="data.html#cb59-69" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Number of active and listed companies&quot;</span>,</span>
-<span id="cb59-70"><a href="data.html#cb59-70" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle,</span>
-<span id="cb59-71"><a href="data.html#cb59-71" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;year of financial ratios&quot;</span>,</span>
-<span id="cb59-72"><a href="data.html#cb59-72" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span></span>
-<span id="cb59-73"><a href="data.html#cb59-73" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb59-74"><a href="data.html#cb59-74" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb59-75"><a href="data.html#cb59-75" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_markdown</span>(),</span>
-<span id="cb59-76"><a href="data.html#cb59-76" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
-<span id="cb59-77"><a href="data.html#cb59-77" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="data.html#cb61-1" tabindex="-1"></a><span class="co"># sampled time points of financial ratios of active companies</span></span>
+<span id="cb61-2"><a href="data.html#cb61-2" tabindex="-1"></a>com.active.years <span class="ot">&lt;-</span> com.time_points.sample <span class="sc">%&gt;%</span></span>
+<span id="cb61-3"><a href="data.html#cb61-3" tabindex="-1"></a>  <span class="fu">left_join</span>(com, <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)) <span class="sc">%&gt;%</span></span>
+<span id="cb61-4"><a href="data.html#cb61-4" tabindex="-1"></a>  <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-5"><a href="data.html#cb61-5" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(public_date, <span class="st">&quot;year&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb61-6"><a href="data.html#cb61-6" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">number_of_companies =</span> <span class="fu">n</span>())</span>
+<span id="cb61-7"><a href="data.html#cb61-7" tabindex="-1"></a></span>
+<span id="cb61-8"><a href="data.html#cb61-8" tabindex="-1"></a>com.active.frequency <span class="ot">&lt;-</span> com <span class="sc">%&gt;%</span></span>
+<span id="cb61-9"><a href="data.html#cb61-9" tabindex="-1"></a>  <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;delisted&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-10"><a href="data.html#cb61-10" tabindex="-1"></a>  <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
+<span id="cb61-11"><a href="data.html#cb61-11" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-12"><a href="data.html#cb61-12" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb61-13"><a href="data.html#cb61-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(<span class="fu">ymd</span>(enddat), <span class="st">&quot;year&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb61-14"><a href="data.html#cb61-14" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
+<span id="cb61-15"><a href="data.html#cb61-15" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb61-16"><a href="data.html#cb61-16" tabindex="-1"></a>    <span class="at">number_of_delistings =</span> <span class="fu">n</span>(),</span>
+<span id="cb61-17"><a href="data.html#cb61-17" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb61-18"><a href="data.html#cb61-18" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb61-19"><a href="data.html#cb61-19" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-20"><a href="data.html#cb61-20" tabindex="-1"></a>    <span class="at">proportion_wanted =</span> number_of_delistings <span class="sc">/</span> <span class="fu">sum</span>(number_of_delistings)</span>
+<span id="cb61-21"><a href="data.html#cb61-21" tabindex="-1"></a>  )</span>
+<span id="cb61-22"><a href="data.html#cb61-22" tabindex="-1"></a></span>
+<span id="cb61-23"><a href="data.html#cb61-23" tabindex="-1"></a>com.active.begdat <span class="ot">&lt;-</span> com.time_points.sample <span class="sc">%&gt;%</span></span>
+<span id="cb61-24"><a href="data.html#cb61-24" tabindex="-1"></a>  <span class="fu">left_join</span>(com, <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)) <span class="sc">%&gt;%</span></span>
+<span id="cb61-25"><a href="data.html#cb61-25" tabindex="-1"></a>  <span class="fu">filter</span>(event_group <span class="sc">==</span> <span class="st">&quot;active&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-26"><a href="data.html#cb61-26" tabindex="-1"></a>  <span class="fu">group_by</span>(permno) <span class="sc">%&gt;%</span></span>
+<span id="cb61-27"><a href="data.html#cb61-27" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-28"><a href="data.html#cb61-28" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb61-29"><a href="data.html#cb61-29" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">year =</span> <span class="fu">floor_date</span>(begdat, <span class="st">&quot;year&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb61-30"><a href="data.html#cb61-30" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">number_of_companies =</span> <span class="fu">n</span>())</span>
+<span id="cb61-31"><a href="data.html#cb61-31" tabindex="-1"></a></span>
+<span id="cb61-32"><a href="data.html#cb61-32" tabindex="-1"></a>subtitle <span class="ot">&lt;-</span> <span class="fu">glue</span>(</span>
+<span id="cb61-33"><a href="data.html#cb61-33" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;blue&quot;]}&quot;&gt;**Number of companies by begdat**&lt;/span&gt;, &#39;</span>,</span>
+<span id="cb61-34"><a href="data.html#cb61-34" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;orange&quot;]}&quot;&gt;**number of companies by public_date**&lt;/span&gt;,&lt;br&gt;&#39;</span>,</span>
+<span id="cb61-35"><a href="data.html#cb61-35" tabindex="-1"></a>    <span class="st">&#39;&lt;span style=&quot;color:{colors[&quot;magenta&quot;]}&quot;&gt;**ideal number of companies proportional to delisting**&lt;/span&gt;&#39;</span></span>
+<span id="cb61-36"><a href="data.html#cb61-36" tabindex="-1"></a>  )</span>
+<span id="cb61-37"><a href="data.html#cb61-37" tabindex="-1"></a></span>
+<span id="cb61-38"><a href="data.html#cb61-38" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb61-39"><a href="data.html#cb61-39" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb61-40"><a href="data.html#cb61-40" tabindex="-1"></a>    <span class="at">data =</span> com.active.years,</span>
+<span id="cb61-41"><a href="data.html#cb61-41" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> number_of_companies, <span class="at">color =</span> <span class="st">&quot;# companies by public_date&quot;</span>),</span>
+<span id="cb61-42"><a href="data.html#cb61-42" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb61-43"><a href="data.html#cb61-43" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb61-44"><a href="data.html#cb61-44" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb61-45"><a href="data.html#cb61-45" tabindex="-1"></a>    <span class="at">data =</span> com.active.frequency,</span>
+<span id="cb61-46"><a href="data.html#cb61-46" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb61-47"><a href="data.html#cb61-47" tabindex="-1"></a>      <span class="at">x =</span> year, <span class="at">y =</span> proportion_wanted <span class="sc">*</span> <span class="fu">sum</span>(com.active.years<span class="sc">$</span>number_of_companies),</span>
+<span id="cb61-48"><a href="data.html#cb61-48" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;ideal # companies proportional to delisting&quot;</span></span>
+<span id="cb61-49"><a href="data.html#cb61-49" tabindex="-1"></a>    ),</span>
+<span id="cb61-50"><a href="data.html#cb61-50" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb61-51"><a href="data.html#cb61-51" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb61-52"><a href="data.html#cb61-52" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb61-53"><a href="data.html#cb61-53" tabindex="-1"></a>    <span class="at">data =</span> com.active.begdat,</span>
+<span id="cb61-54"><a href="data.html#cb61-54" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> number_of_companies, <span class="at">color =</span> <span class="st">&quot;# companies by begdat&quot;</span>),</span>
+<span id="cb61-55"><a href="data.html#cb61-55" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb61-56"><a href="data.html#cb61-56" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb61-57"><a href="data.html#cb61-57" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb61-58"><a href="data.html#cb61-58" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(</span>
+<span id="cb61-59"><a href="data.html#cb61-59" tabindex="-1"></a>      <span class="st">&quot;# companies by begdat&quot;</span>, <span class="st">&quot;# companies by public_date&quot;</span>,</span>
+<span id="cb61-60"><a href="data.html#cb61-60" tabindex="-1"></a>      <span class="st">&quot;ideal # companies proportional to delisting&quot;</span></span>
+<span id="cb61-61"><a href="data.html#cb61-61" tabindex="-1"></a>    ),</span>
+<span id="cb61-62"><a href="data.html#cb61-62" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb61-63"><a href="data.html#cb61-63" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;blue&quot;</span>]),</span>
+<span id="cb61-64"><a href="data.html#cb61-64" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;orange&quot;</span>]),</span>
+<span id="cb61-65"><a href="data.html#cb61-65" tabindex="-1"></a>      <span class="fu">as.character</span>(colors[<span class="st">&quot;magenta&quot;</span>])</span>
+<span id="cb61-66"><a href="data.html#cb61-66" tabindex="-1"></a>    )</span>
+<span id="cb61-67"><a href="data.html#cb61-67" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb61-68"><a href="data.html#cb61-68" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb61-69"><a href="data.html#cb61-69" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Number of active and listed companies&quot;</span>,</span>
+<span id="cb61-70"><a href="data.html#cb61-70" tabindex="-1"></a>    <span class="at">subtitle =</span> subtitle,</span>
+<span id="cb61-71"><a href="data.html#cb61-71" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;year of financial ratios&quot;</span>,</span>
+<span id="cb61-72"><a href="data.html#cb61-72" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span></span>
+<span id="cb61-73"><a href="data.html#cb61-73" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb61-74"><a href="data.html#cb61-74" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb61-75"><a href="data.html#cb61-75" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_markdown</span>(),</span>
+<span id="cb61-76"><a href="data.html#cb61-76" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb61-77"><a href="data.html#cb61-77" tabindex="-1"></a>  )</span></code></pre></div>
 <p><img src="_main_files/figure-html/demo-1.png" width="672" />
 ### Histograms of original vs imputed features
 The left histograms are based on features without imputation, the right histograms are based on imputed features.</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="data.html#cb60-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(com.features.fin)) {</span>
-<span id="cb60-2"><a href="data.html#cb60-2" tabindex="-1"></a>  feature_description <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">1</span>]]</span>
-<span id="cb60-3"><a href="data.html#cb60-3" tabindex="-1"></a>  feature_identifier <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">2</span>]]</span>
-<span id="cb60-4"><a href="data.html#cb60-4" tabindex="-1"></a></span>
-<span id="cb60-5"><a href="data.html#cb60-5" tabindex="-1"></a>  plot_without_imputation <span class="ot">&lt;-</span> <span class="fu">hist_delisting_frequency</span>(</span>
-<span id="cb60-6"><a href="data.html#cb60-6" tabindex="-1"></a>    com.winsorized,</span>
-<span id="cb60-7"><a href="data.html#cb60-7" tabindex="-1"></a>    feature_identifier,</span>
-<span id="cb60-8"><a href="data.html#cb60-8" tabindex="-1"></a>    feature_description</span>
-<span id="cb60-9"><a href="data.html#cb60-9" tabindex="-1"></a>  )</span>
-<span id="cb60-10"><a href="data.html#cb60-10" tabindex="-1"></a></span>
-<span id="cb60-11"><a href="data.html#cb60-11" tabindex="-1"></a>  plot_with_imputation_pmm <span class="ot">&lt;-</span> <span class="fu">hist_delisting_frequency</span>(</span>
-<span id="cb60-12"><a href="data.html#cb60-12" tabindex="-1"></a>    com.imputed <span class="sc">%&gt;%</span></span>
-<span id="cb60-13"><a href="data.html#cb60-13" tabindex="-1"></a>      <span class="fu">left_join</span>(com.winsorized <span class="sc">%&gt;%</span> <span class="fu">select</span>(permno, public_date, years_to_delisting), <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)),</span>
-<span id="cb60-14"><a href="data.html#cb60-14" tabindex="-1"></a>    feature_identifier,</span>
-<span id="cb60-15"><a href="data.html#cb60-15" tabindex="-1"></a>    feature_description</span>
-<span id="cb60-16"><a href="data.html#cb60-16" tabindex="-1"></a>  )</span>
-<span id="cb60-17"><a href="data.html#cb60-17" tabindex="-1"></a></span>
-<span id="cb60-18"><a href="data.html#cb60-18" tabindex="-1"></a>  <span class="fu">print</span>(plot_without_imputation <span class="sc">|</span> plot_with_imputation_pmm)</span>
-<span id="cb60-19"><a href="data.html#cb60-19" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="data.html#cb62-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(com.features.fin)) {</span>
+<span id="cb62-2"><a href="data.html#cb62-2" tabindex="-1"></a>  feature_description <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">1</span>]]</span>
+<span id="cb62-3"><a href="data.html#cb62-3" tabindex="-1"></a>  feature_identifier <span class="ot">&lt;-</span> com.features.fin[[i, <span class="dv">2</span>]]</span>
+<span id="cb62-4"><a href="data.html#cb62-4" tabindex="-1"></a></span>
+<span id="cb62-5"><a href="data.html#cb62-5" tabindex="-1"></a>  plot_without_imputation <span class="ot">&lt;-</span> <span class="fu">hist_delisting_frequency</span>(</span>
+<span id="cb62-6"><a href="data.html#cb62-6" tabindex="-1"></a>    com.winsorized,</span>
+<span id="cb62-7"><a href="data.html#cb62-7" tabindex="-1"></a>    feature_identifier,</span>
+<span id="cb62-8"><a href="data.html#cb62-8" tabindex="-1"></a>    feature_description</span>
+<span id="cb62-9"><a href="data.html#cb62-9" tabindex="-1"></a>  )</span>
+<span id="cb62-10"><a href="data.html#cb62-10" tabindex="-1"></a></span>
+<span id="cb62-11"><a href="data.html#cb62-11" tabindex="-1"></a>  plot_with_imputation_pmm <span class="ot">&lt;-</span> <span class="fu">hist_delisting_frequency</span>(</span>
+<span id="cb62-12"><a href="data.html#cb62-12" tabindex="-1"></a>    com.imputed <span class="sc">%&gt;%</span></span>
+<span id="cb62-13"><a href="data.html#cb62-13" tabindex="-1"></a>      <span class="fu">left_join</span>(com.winsorized <span class="sc">%&gt;%</span> <span class="fu">select</span>(permno, public_date, years_to_delisting), <span class="at">by =</span> <span class="fu">join_by</span>(permno, public_date)),</span>
+<span id="cb62-14"><a href="data.html#cb62-14" tabindex="-1"></a>    feature_identifier,</span>
+<span id="cb62-15"><a href="data.html#cb62-15" tabindex="-1"></a>    feature_description</span>
+<span id="cb62-16"><a href="data.html#cb62-16" tabindex="-1"></a>  )</span>
+<span id="cb62-17"><a href="data.html#cb62-17" tabindex="-1"></a></span>
+<span id="cb62-18"><a href="data.html#cb62-18" tabindex="-1"></a>  <span class="fu">print</span>(plot_without_imputation <span class="sc">|</span> plot_with_imputation_pmm)</span>
+<span id="cb62-19"><a href="data.html#cb62-19" tabindex="-1"></a>}</span></code></pre></div>
 <p><img src="_main_files/figure-html/histrograms.imputed-1.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-2.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-3.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-4.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-5.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-6.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-7.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-8.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-9.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-10.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-11.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-12.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-13.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-14.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-15.png" width="672" /><img src="_main_files/figure-html/histrograms.imputed-16.png" width="672" /></p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="data.html#cb61-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(</span>
-<span id="cb61-2"><a href="data.html#cb61-2" tabindex="-1"></a>  <span class="st">&quot;Number of missing cells in original data set: &quot;</span>,</span>
-<span id="cb61-3"><a href="data.html#cb61-3" tabindex="-1"></a>  com <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(.)))</span>
-<span id="cb61-4"><a href="data.html#cb61-4" tabindex="-1"></a>))</span></code></pre></div>
-<pre><code>## [1] &quot;Number of missing cells in original data set:  543630&quot;</code></pre>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="data.html#cb63-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(</span>
-<span id="cb63-2"><a href="data.html#cb63-2" tabindex="-1"></a>  <span class="st">&quot;Number of missing cells in imputed data set: &quot;</span>,</span>
-<span id="cb63-3"><a href="data.html#cb63-3" tabindex="-1"></a>  com.imputed <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(.)))</span>
+<span id="cb63-2"><a href="data.html#cb63-2" tabindex="-1"></a>  <span class="st">&quot;Number of missing cells in original data set: &quot;</span>,</span>
+<span id="cb63-3"><a href="data.html#cb63-3" tabindex="-1"></a>  com <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(.)))</span>
 <span id="cb63-4"><a href="data.html#cb63-4" tabindex="-1"></a>))</span></code></pre></div>
+<pre><code>## [1] &quot;Number of missing cells in original data set:  543630&quot;</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="data.html#cb65-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(</span>
+<span id="cb65-2"><a href="data.html#cb65-2" tabindex="-1"></a>  <span class="st">&quot;Number of missing cells in imputed data set: &quot;</span>,</span>
+<span id="cb65-3"><a href="data.html#cb65-3" tabindex="-1"></a>  com.imputed <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(.)))</span>
+<span id="cb65-4"><a href="data.html#cb65-4" tabindex="-1"></a>))</span></code></pre></div>
 <pre><code>## [1] &quot;Number of missing cells in imputed data set:  0&quot;</code></pre>
 
 </div>
