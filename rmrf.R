@@ -909,5 +909,3 @@ growRF_Parallel <- function(ntrees, formula, data, search, method,
 #        useRpart=FALSE,
 #        minpvalue=0.05,
 #        corstr="ar1")
-
-rf_correct_sample.pred.probability.training <- predictRF(rf_correct_sample, newdata = data.training[1,], prediction = "overall", checkCases = FALSE, corstr = NULL)

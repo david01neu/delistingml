@@ -275,7 +275,7 @@ illustrate.metrics <- function(hyperparameters, actuals, pred.probability) {
   
   # Determine best cutpoint which maximizes MCCF1-score
   cutpoint.mccf1 <- compute.mccf1cutpoint(pred.probability, actuals)
-  print(cutpoint.mccf1$plot)
+  #print(cutpoint.mccf1$plot)
   print(cutpoint.mccf1$best_cutpoint.text)
   pander(cutpoint.mccf1$con_table, caption = "Classification table with MCCF1 cutpoint")
   

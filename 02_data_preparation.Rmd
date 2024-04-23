@@ -146,7 +146,7 @@ data.prepare <- function(com_data, com.subset, macro.data, feature.identifier) {
   # add historic development features (5 year history)
   data.prepared <- data.prepare.history(data.prepared, feature.identifier) %>% 
     filter(!is.na(public_date_selected)) %>% 
-    select(-event_group, -public_date_selected)
+    select(-public_date_selected)#-event_group, -public_date_selected)
 
   # add features with macro data ratios (gdp, inflation, interest, sp500)
   data.prepared <- data.prepared %>%
@@ -194,7 +194,7 @@ com.time_points <- function(data) {
 # remove features that meet threshold in chunk correlated_features_detect_removals
 com.features.fin <- com.features.fin %>% filter(!identifier %in% feature_indicators_to_remove)
 
-com <- com %>% filter(public_date >= ymd("2005-01-01"))
+com <- com %>% filter(public_date >= ymd("2005-01-01"), public_date < ymd("2021-01-01"))
 
 # list companies and the number of quarters in which they reported financial ratio dates
 com.quarters_per_company <- com %>%
