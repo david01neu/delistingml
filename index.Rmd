@@ -121,9 +121,9 @@ REDO_MICE_IMPUTATION_PPM <- FALSE
 # model constants
 REDO_MODEL_FITTING <- FALSE
 
-# returns TRUE if years to delisting is between 0.25 and 1.25
+# returns TRUE if years to delisting is between 0.25 and 0.5
 determine_delisting_property <- function(years_to_delisting) {
-  return(0.25 <= years_to_delisting & years_to_delisting < 1.25)
+  return(0.25 <= years_to_delisting & years_to_delisting < 0.5)
 }
 ```
 

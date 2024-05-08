@@ -231,16 +231,16 @@ rmrf.metrics.roc.cutpoint <- compute.roc(
 
 
 
-rmrf.pred.probability.test <- predictRF(rmrf, newdata = data.test.2023, prediction = "overall", checkCases = FALSE, corstr = "ar1")
+rmrf.pred.probability.test <- predictRF(rmrf, newdata = data.test, prediction = "overall", checkCases = FALSE, corstr = "ar1")
 
 # metrics on test set using best threshold determined based on train data
-rmrf.summary.test <- rbind(compute.metrics(data.test.2023$response, rmrf.pred.probability.test >= rmrf.metrics.roc.cutpoint),
-      compute.metrics(data.test.2023$response, rmrf.pred.probability.test >= rmrf.metrics$cutpoint.mccf1)) %>%
+rmrf.summary.test <- rbind(compute.metrics(data.test$response, rmrf.pred.probability.test >= rmrf.metrics.roc.cutpoint),
+      compute.metrics(data.test$response, rmrf.pred.probability.test >= rmrf.metrics$cutpoint.mccf1)) %>%
   cbind(splitting = c("ROC", "MCCF1"), .)
 pander(rmrf.summary.test, caption = "Repeated measures random forest on test data")
 ```
 ```{r}
-rf_correct_sample <- growRF_Parallel(ntrees = 100,
+rf_correct_sample <- growRF_Parallel(ntrees = 300,
                    formula = response ~ capital_ratio + at_turn + inv_turn + rect_turn + pay_turn + cash_ratio + curr_ratio + aftret_eq + aftret_equity + gpm + opmad + roa + roe + de_ratio + debt_assets + pe_exi + response + capital_ratio_h + at_turn_h + inv_turn_h + rect_turn_h + pay_turn_h + cash_ratio_h + curr_ratio_h + aftret_eq_h + aftret_equity_h + gpm_h + opmad_h + roa_h + roe_h + de_ratio_h + debt_assets_h + pe_exi_h + gdpc1_chg + cpiaucsl_chg + fredfunds_chg + sp500_chg | permno,
                    data = data.training %>% select(-public_date),
                    search="ar", # acceptance-rejection trees
@@ -285,7 +285,7 @@ pander(rf_correct_sample.summary.test, caption = "Repeated measures random fores
 ```{r}
 load("../data/data.test.2023.RData")
 
-rf.pred.probability.test.2023 <- predict.rfsrc(rf, data.test.2023)$predicted
+rf.pred.probability.test.2023 <- predict.rfsrc(rf, newdata = data.test.2023 %>% select(-c(quick_ratio,opmbd,debt_at,quick_ratio_h,opmbd_h,debt_at_h)))
 # metrics on test set using best threshold determined based on train data
 rf.summary.test.2023 <- rbind(compute.metrics((data.test.2023 %>% drop_na())$response, rf.pred.probability.test.2023 >= rf.metrics.roc.cutpoint),
       compute.metrics((data.test.2023 %>% drop_na())$response, rf.pred.probability.test.2023 >= rf.metrics$cutpoint.mccf1)) %>%
